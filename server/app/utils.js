@@ -514,6 +514,7 @@ export const reformatLatestData = (inputArray) => {
   const NORMAL_COLOR = "green"
   const UNKNOWN_COLOR = "blue"
   let newArray = []
+
   inputArray.forEach((item) => {
     if (item.MonitoringDataInfos.length > 0) {
       let newData = []

@@ -1,7 +1,7 @@
 import Sequelize from "sequelize"
 
 export default (sequelize, DataTypes) => {
-  class Indicator extends Sequelize.Model {}
+  class Indicator extends Sequelize.Model { }
 
   Indicator.init(
     {
@@ -17,15 +17,15 @@ export default (sequelize, DataTypes) => {
     },
     { sequelize, tableName: "indicators", modelName: "Indicator" }
   )
-  
+
   Indicator.associate = (models) => {
     Indicator.hasMany(models.IndicatorThreshold, { foreignKey: "indicatorId", onDelete: 'CASCADE', hooks: true })
     Indicator.hasMany(models.StationIndicators, { foreignKey: "idIndicator", onDelete: 'CASCADE', hooks: true })
-    Indicator.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType'})
-    
+    Indicator.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType' })
+    Indicator.hasMany(models.ApiSharedIndicator, { foreignKey: 'indicatorId', onDelete: 'CASCADE', hooks: true })
   }
 
-  
+
   return Indicator
 }
 
