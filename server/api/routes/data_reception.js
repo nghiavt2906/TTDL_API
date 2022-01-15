@@ -8,6 +8,7 @@ import { newId } from "models/utils"
 import { checkFtpFolder } from "utils/ftp_nhap"
 import { testFTP } from "utils/ftp_v2"
 import { handleXmlData } from "utils/xml"
+import { handleJsonData } from 'utils/json'
 import {
   getManagerRoutes,
   reformatLatestData,
@@ -170,8 +171,8 @@ export default (expressRouter) => {
   })
 
   router.post("/", async (req, res, next) => {
-    // console.log(req.body)
-    let result = await handleXmlData(req.body)
+    console.log(req.body)
+    let result = req.query.format === 'json' ? await handleJsonData(req.body) : await handleXmlData(req.body)
     res.status(result.statusCode).send(result.message)
   })
 
