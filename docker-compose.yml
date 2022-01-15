@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+    nodeserver:
+        restart: always
+        build:
+            dockerfile: Dockerfile
+            context: .
+        ports:
+            - "4000:4000"
+        volumes:
+            - ~/Public:/usr/src/app_service/public
+    nginx:
+        restart: always
+        depends_on: 
+            - nodeserver
+        build:
+            dockerfile: Dockerfile
+            context: ./setups/nginx
+        ports:
+            - "80:80"

@@ -1,0 +1,17 @@
+**/node-modules
+
+docs
+
+api
+
+test
+
+srcipts
+
+package-lock.json
+
+.prettierrc
+
+.gitignore
+
+*.md

@@ -1,0 +1,13 @@
+@host = localhost
+@port = 4000
+@accessToke = RSYU0E4hBk8Z3LSOqYS1QC1y1Ls4oitANQLPW0p8"
+
+
+### Get latest data
+POST http://{{host}}:{{port}}/api/bando/hlWl0fKzSMAQTyKXsRM5 HTTP/1.1
+Authorization: accessToken {{accessToke}};
+Content-Type: application/json
+
+{ 
+  "stationId" : ["ALL", "73SywWduuD95etjlWnHa", "U0mdWsRt802k7EBKdXZR"] 
+}

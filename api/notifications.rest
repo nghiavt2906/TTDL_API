@@ -1,0 +1,9 @@
+@host = localhost
+@port = 4000
+@accessToke = RSYU0E4hBk8Z3LSOqYS1QC1y1Ls4oitANQLPW0p8"
+
+
+### Get latest data
+GET http://{{host}}:{{port}}/api/notifications/hlWl0fKzSMAQTyKXsRM5?page=0&limit=10 HTTP/1.1
+Authorization: accessToken {{accessToke}};
+Content-Type: application/json

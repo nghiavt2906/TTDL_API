@@ -1,0 +1,8 @@
+Install nodejs version 14: curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+
+Install gcc g++:  sudo apt-get install gcc g++ make
+
+Install python3
+
+Map python to python3: sudo apt install python-is-python3
+

@@ -1,0 +1,109 @@
+import User from "./user"
+import Station from "./station"
+import Role from "./role"
+import Camera from "./camera"
+import Notification from "./notification"
+import Authentication from "./authentication"
+import UserStation from "./user_station"
+import Authorization from "./authorization"
+import UserManagement from "./user_management"
+import IndicatorThreshold from "./indicator_threshold"
+import Indicator from "./indicator"
+import MonitoringDataInfo from "./monitoring_data_info"
+import MonitoringData from "./monitoring_data"
+import MonitoringGroup from "./monitoring_group"
+import MonitoringType from "./monitoring_type"
+import StationIndicators from "./station_indicators"
+import StationFtp from "./station_ftp"
+import System from "./system"
+import District from "./districts"
+import Citizen from "./citizens"
+import CitizenAccessToken from "./citizen_access_token"
+import PublicAuthentication from "./public_authentication"
+import CitizenStation from "./citizen_stations"
+import News from "./news"
+import Firebase from "./firebase"
+import Email from "./email"
+import Sms from "./sms"
+import CitizenNotification from "./citizen_notification"
+import UserNotification from "./user_notification"
+import Excel from "./excel"
+import Permission from "./permission"
+import Character from "./character"
+import CharacterPermission from "./character_permission"
+import Manager from "./manager"
+import ManagerAccessToken from "./manager_access_token"
+import ManagerStation from "./manager_station"
+import CitizenPasswordRecovery from "./citizen_password_recovery"
+import FtpSyncData from "./ftp_sync_data"
+import Ftp from "./ftp"
+import EnviromentIndex from "./environment_index"
+import ActivityLog from "./activity_logs"
+import StationSample from "./station_sample"
+import SampleHistory from "./sample_history"
+import ServiceCall from "./service_call"
+import ManagerNotificationSettings from "./manager_notification_settings"
+import ManagerNotifications from "./manager_notifications"
+import Notifications from "./notifications"
+import ManagerSocket from "./manager_socket"
+import StationAutoParameters from "./station_auto_parameters"
+import Route from "./routes"
+import CharacterRoute from "./character_route"
+
+class App {
+  constructor() {
+    this.User = new User()
+    this.Station = new Station()
+    this.Role = new Role()
+    this.Camera = new Camera()
+    this.Notification = new Notification()
+    this.Authentication = new Authentication()
+    this.UserStation = new UserStation()
+    this.Authorization = new Authorization()
+    this.UserManagement = new UserManagement()
+    this.IndicatorThreshold = new IndicatorThreshold()
+    this.Indicator = new Indicator()
+    this.MonitoringDataInfo = new MonitoringDataInfo()
+    this.MonitoringData = new MonitoringData()
+    this.District = new District()
+    this.MonitoringGroup = new MonitoringGroup()
+    this.MonitoringType = new MonitoringType()
+    this.StationIndicators = new StationIndicators()
+    this.StationFtp = new StationFtp()
+    this.System = new System()
+    this.Citizen = new Citizen()
+    this.CitizenAccessToken = new CitizenAccessToken()
+    this.CitizenStation = new CitizenStation()
+    this.PublicAuthentication = new PublicAuthentication()
+    this.News = new News()
+    this.Firebase = new Firebase()
+    this.Email = new Email()
+    this.Sms = new Sms()
+    this.CitizenNotification = new CitizenNotification()
+    this.UserNotification = new UserNotification()
+    this.Excel = new Excel()
+    this.Permission = new Permission()
+    this.Character = new Character()
+    this.CharacterPermission = new CharacterPermission()
+    this.Manager = new Manager()
+    this.ManagerAccessToken = new ManagerAccessToken()
+    this.ManagerStation = new ManagerStation()
+    this.CitizenPasswordRecovery = new CitizenPasswordRecovery()
+    this.FtpSyncData = new FtpSyncData()
+    this.Ftp = new Ftp()
+    this.EnviromentIndex = new EnviromentIndex()
+    this.ActivityLog = new ActivityLog()
+    this.StationSample = new StationSample()
+    this.SampleHistory = new SampleHistory()
+    this.ServiceCall = new ServiceCall()
+    this.ManagerNotificationSettings = new ManagerNotificationSettings()
+    this.ManagerNotifications = new ManagerNotifications()
+    this.Notifications = new Notifications()
+    this.ManagerSocket = new ManagerSocket()
+    this.StationAutoParameters = new StationAutoParameters()
+    this.Route = new Route()
+    this.CharacterRoute = new CharacterRoute()
+  }
+}
+
+export default new App()

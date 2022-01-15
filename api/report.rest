@@ -1,0 +1,17 @@
+@host = localhost
+@port = 4000
+@accessToke = RSYU0E4hBk8Z3LSOqYS1QC1y1Ls4oitANQLPW0p8"
+
+
+### Get latest data
+POST http://{{host}}:{{port}}/api/baocao2/hlWl0fKzSMAQTyKXsRM5 HTTP/1.1
+Authorization: accessToken {{accessToke}};
+Content-Type: application/json
+
+{ 
+  "stationId" : "28VQdb8xD6qDgYtRTQB5",
+  "startAt": "2021-09-19T23:00:00.000Z",
+  "endAt": "2021-09-21T23:00:00.000Z",
+  "page": 1,
+  "limit": 10
+}

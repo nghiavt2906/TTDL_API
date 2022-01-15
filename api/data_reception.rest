@@ -1,0 +1,24 @@
+@host = localhost
+@port = 4000
+@accessToke = RSYU0E4hBk8Z3LSOqYS1QC1y1Ls4oitANQLPW0p8"
+
+### test disconnection
+GET http://{{host}}:{{port}}/api/tiepnhandulieu/test_disconnection HTTP/1.1
+
+### test overthreshold
+GET http://{{host}}:{{port}}/api/tiepnhandulieu/test_overthreshold HTTP/1.1
+
+### test wrongstructure
+GET http://{{host}}:{{port}}/api/tiepnhandulieu/test_wrongstructure HTTP/1.1
+
+### test FTP
+GET http://{{host}}:{{port}}/api/tiepnhandulieu/syncFtp HTTP/1.1
+
+### test AUTO
+GET http://{{host}}:{{port}}/api/tiepnhandulieu/testAuto HTTP/1.1
+
+### test AUTO
+GET http://{{host}}:{{port}}/api/nhomnguoidung/getRouteList HTTP/1.1
+
+### test AUTO
+GET http://{{host}}:{{port}}/api/nhomnguoidung/getRouteList HTTP/1.1

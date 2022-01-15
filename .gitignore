@@ -1,0 +1,5 @@
+node_modules
+streams/*
+xlsx/*.xlsx
+build
+server/logs/*.log

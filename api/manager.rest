@@ -1,0 +1,14 @@
+@host = localhost
+@port = 4000
+@accessToken = RSYU0E4hBk8Z3LSOqYS1QC1y1Ls4oitANQLPW0p8
+
+
+### Get latest data
+GET http://{{host}}:{{port}}/api/nguoidung/get_number_of_notifications/hlWl0fKzSMAQTyKXsRM5 HTTP/1.1
+Authorization: accessTokenn {{accessToken}};
+Content-Type: application/json
+
+### Get manager info
+GET http://{{host}}:{{port}}/api/nguoidung/getInfo HTTP/1.1
+Authorization: {{accessToken}}
+Content-Type: application/json
