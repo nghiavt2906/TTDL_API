@@ -43,7 +43,7 @@ async function updateDataInfo(jsonObject, id) {
 	let dataInfo = {}
 	let dataIndicator = {}
 
-	dataIndicator = func.eleminateElementFromObject(jsonObject, ['dev', 'id', 'time', 'pin', 'axis', 'idStation'])
+	dataIndicator = func.eleminateElementFromObject(jsonObject, ['dev', 'id', 'time', 'pin', 'axis', 'idStation', 'apiKey'])
 	dataInfo.monitoringContent = JSON.stringify(jsonObject)
 	dataInfo.battery = _.has(jsonObject, 'pin') ? jsonObject['pin'] : null
 	dataInfo.location = _.has(jsonObject, 'axis') ? jsonObject['axis'] : null
@@ -62,7 +62,7 @@ async function insertDataInfo(jsonObject, id) {
 	let dataInfo = {}
 	let dataIndicator = {}
 
-	dataIndicator = func.eleminateElementFromObject(jsonObject, ['dev', 'id', 'time', 'pin', 'axis', 'idStation'])
+	dataIndicator = func.eleminateElementFromObject(jsonObject, ['dev', 'id', 'time', 'pin', 'axis', 'idStation', 'apiKey'])
 	dataInfo.id = newId()
 	dataInfo.stationId = id
 	dataInfo.monitoringContent = JSON.stringify(jsonObject)

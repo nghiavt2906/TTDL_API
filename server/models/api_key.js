@@ -10,14 +10,13 @@ export default (sequelize, DataTypes) => {
 			description: { type: Sequelize.TEXT },
 			secret: { type: Sequelize.STRING(40), allowNull: false, unique: true },
 			typeId: { type: Sequelize.STRING(20), allowNull: false },
-			stationId: { type: Sequelize.STRING(20), allowNull: false }
 		},
 		{ sequelize, tableName: "api_keys", modelName: "ApiKey" }
 	)
 
 	ApiKey.associate = models => {
-		ApiKey.belongsTo(models.Station, { foreignKey: 'stationId' })
 		ApiKey.belongsTo(models.ApiKeyType, { foreignKey: 'typeId' })
+		ApiKey.hasMany(models.ApiSharedStation, { foreignKey: 'apiKeyId', onDelete: 'CASCADE', hooks: true })
 	}
 
 	return ApiKey
