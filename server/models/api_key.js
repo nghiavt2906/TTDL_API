@@ -18,7 +18,6 @@ export default (sequelize, DataTypes) => {
 	ApiKey.associate = models => {
 		ApiKey.belongsTo(models.Station, { foreignKey: 'stationId' })
 		ApiKey.belongsTo(models.ApiKeyType, { foreignKey: 'typeId' })
-		ApiKey.hasMany(models.ApiSharedIndicator, { foreignKey: 'apiKeyId', onDelete: 'CASCADE', hooks: true })
 	}
 
 	return ApiKey
