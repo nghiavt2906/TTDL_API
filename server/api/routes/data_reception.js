@@ -25,6 +25,8 @@ import CameraService from "services/camera"
 import http from "http"
 import fs from "fs"
 import configs from "configs"
+import HttpStatus from "http-status-codes"
+import ApiTypes from 'constant/api_type'
 
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
@@ -172,6 +174,21 @@ export default (expressRouter) => {
 
   router.post("/", async (req, res, next) => {
     console.log(req.body)
+    const { apiKey } = req.body
+
+    try {
+      const apiKeyInDb = await app.ApiKey.validateApiSecretKey(apiKey, ApiTypes.DATA_RECEPTION)
+      if (apiKeyInDb.dataValues.receivedStationId !== req.body.idStation)
+        throw {
+          status: HttpStatus.BAD_REQUEST,
+          id: "api.api_key.invalid_station_id",
+          messages: "Id của trạm không hợp lệ!",
+        }
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+
     let result = req.query.format === 'json' ? await handleJsonData(req.body) : await handleXmlData(req.body)
     res.status(result.statusCode).send(result.message)
   })

@@ -1,0 +1,10 @@
+# POST http://sogtvt.monisoft.vn/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+POST http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+content-type: application/json
+
+{
+	"name": "DataSharingTest",
+	"description": "API chia sẻ dữ liệu cho bên thứ ba từ các trạm",
+	"type": "DATA_SHARING",
+	"stationIds": ["TQyrEfK0emPKskdgIxDT", "1PxWtHLrQxDMl2Mzj1F0"]
+}

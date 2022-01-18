@@ -16,9 +16,7 @@ export const handleJsonData = async jsonData => {
 	// }
 
 	idStation = jsonData.idStation
-	// let sentTime = func.convertToISODateFormat(jsonData.time)
-	// sentTime = moment(sentTime).format('YYYY-MM-DD HH:mm:ss')
-	let sentTime = jsonData.time
+	let sentTime = moment(jsonData.time).add(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
 	rawData = JSON.stringify(jsonData)
 
 	let checkData = await app.MonitoringDataInfo.findMonitoringDataInfo(idStation, rawData, sentTime)
@@ -69,10 +67,7 @@ async function insertDataInfo(jsonObject, id) {
 	dataInfo.battery = _.has(jsonObject, 'pin') ? jsonObject['pin'] : null
 	dataInfo.location = _.has(jsonObject, 'axis') ? jsonObject['axis'] : null
 	dataInfo.isFtpdata = 0
-
-	// let datetime = func.convertToISODateFormat(jsonObject.time)
-	// dataInfo.sentAt = moment(datetime).format('YYYY-MM-DD HH:mm:ss')
-	dataInfo.sentAt = jsonObject.time
+	dataInfo.sentAt = moment(jsonObject.time).add(7, 'hours').format('YYYY-MM-DD HH:mm:ss')
 
 	let insertedInfo = await app.MonitoringDataInfo.createMonitoringDataInfo(dataInfo)
 

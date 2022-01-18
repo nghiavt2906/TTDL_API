@@ -1,0 +1,12 @@
+# POST http://sogtvt.monisoft.vn/api/tiepnhandulieu?format=json HTTP/1.1
+POST http://localhost:4000/api/tiepnhandulieu?format=json HTTP/1.1
+content-type: application/json
+
+{
+	"time": "2022-01-18 14:27:00",
+	"idStation": "1PxWtHLrQxDMl2Mzj1F0",
+	"apiKey": "OKi1gDuHv0ULmyC5Efm7qjnIO49qU52RhFFir3R3",
+	"CO": "21050 mg/m3",
+	"Nox": "54 ug/m3",
+	"TSP": "951"
+}

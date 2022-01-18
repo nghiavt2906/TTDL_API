@@ -1,0 +1,21 @@
+# POST http://sogtvt.monisoft.vn/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+
+POST http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+content-type: application/json
+
+{
+	"name": "An Lộc Reception API",
+	"description": "API nhận dữ liệu cho trạm An Lộc",
+	"type": "DATA_RECEPTION",
+	"stationId": "TQyrEfK0emPKskdgIxDT"
+}
+
+# POST http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+# content-type: application/json
+
+# {
+# 	"name": "Bãi 30/4 Reception API",
+# 	"description": "API nhận dữ liệu cho trạm Bãi 30/4",
+# 	"type": "DATA_RECEPTION",
+# 	"stationId": "1PxWtHLrQxDMl2Mzj1F0"
+# }

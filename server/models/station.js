@@ -57,6 +57,7 @@ export default (sequelize, DataTypes) => {
     Station.hasOne(models.StationAutoParameter, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
     Station.hasMany(models.ManagerStation, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
     Station.hasMany(models.SampleHistory, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
+    Station.hasOne(models.ApiKey, { foreignKey: 'receivedStationId', onDelete: 'CASCADE', hooks: true })
     Station.hasMany(models.ApiSharedStation, { foreignKey: 'stationId', onDelete: 'CASCADE', hooks: true })
   }
 

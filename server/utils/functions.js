@@ -1,10 +1,10 @@
 import _ from 'lodash'
-import {newId} from 'models/utils'
+import { newId } from 'models/utils'
 import moment from 'moment'
 import app from 'app'
 
 export const changeBoleanToTinyInt = (boleanValue) => {
-  if(boleanValue === true ){
+  if (boleanValue === true) {
     return 1
   } else {
     return 0
@@ -16,19 +16,29 @@ export const renderStationIndicatorData = (idStation, arrayIndicators) => {
   let newData = []
   newData = arrayIndicators.map(indicator => {
     return {
-      id : newId(),
-      idStation : idStation,
-      idIndicator : indicator.value,
-      status : '00'
+      id: newId(),
+      idStation: idStation,
+      idIndicator: indicator.value,
+      status: '00'
     }
   })
   return newData
 }
 
-export const convertToNormalDate = (dataDate) => {
-  if(dataDate === null || dataDate === undefined) return ''
+export const renderSharedStationData = (apiKeyId, stationIdArray) => {
+  let newData = []
+  newData = stationIdArray.map(stationId => ({
+    id: newId(),
+    apiKeyId,
+    stationId
+  }))
+  return newData
+}
 
-  let localDate = new Date(dataDate).toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"})
+export const convertToNormalDate = (dataDate) => {
+  if (dataDate === null || dataDate === undefined) return ''
+
+  let localDate = new Date(dataDate).toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
 
   let dateTime = localDate.split(",");
 
@@ -48,22 +58,22 @@ export const convertToNormalDate = (dataDate) => {
 export const addIndicatorValues = (monitoringDataInfo, monitoringData, arraySensor) => {
   // console.log({monitoringDataInfo, monitoringData, arraySensor})
   let newmonitoringDataInfo = []
-  newmonitoringDataInfo = monitoringDataInfo.map(dataInfo=> {
+  newmonitoringDataInfo = monitoringDataInfo.map(dataInfo => {
     dataInfo.sentAt = exports.convertToNormalDate(dataInfo.sentAt)
     arraySensor.map(sensor => {
-      let index = _.findIndex(monitoringData, {idData : dataInfo.idData, indicator: sensor.indicatorName})
-      if(index > -1){
+      let index = _.findIndex(monitoringData, { idData: dataInfo.idData, indicator: sensor.indicatorName })
+      if (index > -1) {
         dataInfo[sensor.indicatorName] = monitoringData[index].value
       } else {
         dataInfo[sensor.indicatorName] = 0
-      }      
+      }
     })
     return dataInfo
   })
   return newmonitoringDataInfo
 }
 
-export const changeToArrayFilter =  (beginarray, nameKey, nameValue) => {
+export const changeToArrayFilter = (beginarray, nameKey, nameValue) => {
   let newArray = []
   newArray = beginarray.map(element => {
     var newElement = element.dataValues
@@ -76,7 +86,7 @@ export const changeToArrayFilter =  (beginarray, nameKey, nameValue) => {
   return newArray
 }
 
-export const changeToArrayReactSelect =  (beginarray, nameValue, nameLabel) => {
+export const changeToArrayReactSelect = (beginarray, nameValue, nameLabel) => {
   // console.log('It go to here')
   let newArray = []
   newArray = beginarray.map(element => {
@@ -91,8 +101,8 @@ export const changeToArrayReactSelect =  (beginarray, nameValue, nameLabel) => {
 }
 
 export const getValueSystem = (arrayData, field) => {
-  let index = _.findIndex(arrayData, {name : field})
-  if(index > -1){
+  let index = _.findIndex(arrayData, { name: field })
+  if (index > -1) {
     return arrayData[index]['value']
   } else {
     return ''
@@ -103,13 +113,13 @@ export const changeNestedField = (data, tableName, oldField, newField, status) =
   let newData = []
   newData = data.map(element => {
     let newElement = {}
-    if(status) {
-      newElement = element.dataValues 
+    if (status) {
+      newElement = element.dataValues
     } else {
-      newElement = element 
+      newElement = element
     }
     newElement[newField] = newElement[tableName][oldField]
-    delete(newElement[tableName])
+    delete (newElement[tableName])
     return newElement
   })
   return newData
@@ -117,11 +127,11 @@ export const changeNestedField = (data, tableName, oldField, newField, status) =
 
 export const eleminateNestedField = (data, fields) => {
   let newData = []
-  newData = data.map(element => {    
-    let newElement = element.dataValues 
+  newData = data.map(element => {
+    let newElement = element.dataValues
     fields.forEach((field) => {
-      newElement = {...newElement, ...newElement[field].dataValues}
-      delete(newElement[field])
+      newElement = { ...newElement, ...newElement[field].dataValues }
+      delete (newElement[field])
     })
     return newElement
   })
@@ -137,40 +147,40 @@ export const getIdData = (datas) => {
 
 
 // Convert Xml (after parse-body xml) to normal object
-export const converXmlToObject = (xml,parentKey) => {
+export const converXmlToObject = (xml, parentKey) => {
   let xmlObject = {}
-  for(var key in xml[parentKey]){
+  for (var key in xml[parentKey]) {
     xmlObject[key] = xml[parentKey][key][0]
   }
   return xmlObject
 }
 // Eleminate Attributes having the same keys in array eleminateKeys in targetObject and return newObject
-export const eleminateElementFromObject = (targetObject,eleminateKeys) => {
-  let newObject = {} 
-  for (var key in targetObject){
-    if (!eleminateKeys.includes(key)){
+export const eleminateElementFromObject = (targetObject, eleminateKeys) => {
+  let newObject = {}
+  for (var key in targetObject) {
+    if (!eleminateKeys.includes(key)) {
       newObject[key] = targetObject[key]
     }
   }
   return newObject
 }
 // search and check in targetObject have the same keys in checkKeys array and return newObject
-export const checkElementInObject = (targetObject,checkKeys) => {
-  let newObject = {} 
-  for (var key in targetObject){
-    if (checkKeys.includes(key)){
+export const checkElementInObject = (targetObject, checkKeys) => {
+  let newObject = {}
+  for (var key in targetObject) {
+    if (checkKeys.includes(key)) {
       newObject[key] = targetObject[key]
     }
   }
   return newObject
 }
 export const convert_StringToDateTime = (string) => { //'20170929130707' => '13:07:07 29-09-2017'
-  year = string.substring(0,4)
-  month = string.substring(4,6)
-  day = string.substring(6,8)
-  hour = string.substring(8,10)
-  min = string.substring(10,12)
-  second = string.substring(12,14)
+  year = string.substring(0, 4)
+  month = string.substring(4, 6)
+  day = string.substring(6, 8)
+  hour = string.substring(8, 10)
+  min = string.substring(10, 12)
+  second = string.substring(12, 14)
 
   return `${hour}:${min}:${second} ${day}-${month}-${year}`
 }
@@ -183,15 +193,15 @@ export const convertToISODateFormat = (stringNomalDate) => { //13:07:07 29-09-20
   return new Date(stringDate)
 }
 export const convertTimeToISOFormat = (stringNomalDate) => { // 20170929130811 => 13:08:11 09-29-2017
-  let newDate = `${stringNomalDate.substr(8,2)}:${stringNomalDate.substr(10,2)}:${stringNomalDate.substr(12,2)} ${stringNomalDate.substr(4,2)}-${stringNomalDate.substr(6,2)}-${stringNomalDate.substr(0,4)}`
+  let newDate = `${stringNomalDate.substr(8, 2)}:${stringNomalDate.substr(10, 2)}:${stringNomalDate.substr(12, 2)} ${stringNomalDate.substr(4, 2)}-${stringNomalDate.substr(6, 2)}-${stringNomalDate.substr(0, 4)}`
   // return new Date(newDate).toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"})
   return new Date(newDate)
 }
 export const convertObjectToArrayQuery = (objectData, tableName, id_solieu) => {
   let arrayQuery = []
-  for(var key in objectData){
+  for (var key in objectData) {
     let giatriQT = objectData[key].split(' ')
-    if(giatriQT.length === 1){
+    if (giatriQT.length === 1) {
       giatriQT.push('')
     }
     // console.log(giatriQT)
@@ -202,7 +212,7 @@ export const convertObjectToArrayQuery = (objectData, tableName, id_solieu) => {
 }
 export const convertObjectToArrayUpdateQuery = (objectData, tableName, id_solieu) => {
   let arrayQuery = []
-  for(var key in objectData){
+  for (var key in objectData) {
     arrayQuery.push(`update ${tableName} set ten_chiso = '${key}', giatri_quantrac = ${objectData[key]} where id_solieu = ${id_solieu}`)
   }
   return arrayQuery
@@ -230,14 +240,14 @@ export const analyze_FolderName = (string) => {
 */
 export const convert_ArrayToObject = (data) => {
   return data.map(smalldata => {
-      let newData = {}
-      newData.tenchiso = smalldata[0]
-      newData.ketqua = smalldata[1]
-      newData.donvi = smalldata[2]
-      newData.thoigian = smalldata[3]
-      newData.trangthaiSensor = smalldata[4].substr(0,2)
-      return newData
-    })
+    let newData = {}
+    newData.tenchiso = smalldata[0]
+    newData.ketqua = smalldata[1]
+    newData.donvi = smalldata[2]
+    newData.thoigian = smalldata[3]
+    newData.trangthaiSensor = smalldata[4].substr(0, 2)
+    return newData
+  })
 }
 
 
@@ -254,7 +264,7 @@ export const compare_Cautrucfile = (tenFileGuive, tenFileMacdinh) => {
   var fileGuive = analyze_TenFile(tenFileGuive)
   var fileMacdinh = analyze_TenFile(tenFileMacdinh)
   // console.log(fileGuive,fileMacdinh)
-  if(fileGuive.loaiFile !== 'txt' || fileGuive.ten !== fileMacdinh.ten || !validate_Thoigian(fileGuive.thoigian)){
+  if (fileGuive.loaiFile !== 'txt' || fileGuive.ten !== fileMacdinh.ten || !validate_Thoigian(fileGuive.thoigian)) {
     return false
   }
   return true
@@ -269,19 +279,19 @@ export const compare_Cautrucfile = (tenFileGuive, tenFileMacdinh) => {
 * return {boolean} true/false
 */
 export const validate_Thoigian = (thoigian) => {
-  if(!validator.isNumeric(thoigian) || thoigian.length !== 14){
+  if (!validator.isNumeric(thoigian) || thoigian.length !== 14) {
     return false
   }
-  var year = parseInt(thoigian.substr(0,4))
-  var month = parseInt(thoigian.substr(4,2))
-  var day = parseInt(thoigian.substr(6,2))
-  var hour = parseInt(thoigian.substr(8,2))
-  var min = parseInt(thoigian.substr(10,2))
-  var sec = parseInt(thoigian.substr(12,2))
-  if(year < 2019 || month > 12 || day > 31){
+  var year = parseInt(thoigian.substr(0, 4))
+  var month = parseInt(thoigian.substr(4, 2))
+  var day = parseInt(thoigian.substr(6, 2))
+  var hour = parseInt(thoigian.substr(8, 2))
+  var min = parseInt(thoigian.substr(10, 2))
+  var sec = parseInt(thoigian.substr(12, 2))
+  if (year < 2019 || month > 12 || day > 31) {
     return false
   }
-  if(hour > 24 || min > 60 || sec > 60){
+  if (hour > 24 || min > 60 || sec > 60) {
     return false
   }
   return true
@@ -301,7 +311,7 @@ export const validate_Thoigian = (thoigian) => {
 */
 export const validate_noidungFile = (noidung) => {
   return noidung.every((dataChiso) => {
-    if(!validator.isNumeric(dataChiso.ketqua) || !validate_Thoigian(dataChiso.thoigian) || _.indexOf(['00','01','02'],dataChiso.trangthaiSensor) < 0) {
+    if (!validator.isNumeric(dataChiso.ketqua) || !validate_Thoigian(dataChiso.thoigian) || _.indexOf(['00', '01', '02'], dataChiso.trangthaiSensor) < 0) {
       return false
     }
     return true
@@ -340,19 +350,19 @@ export const analyzeFilter = (filter) => {
   let station = []
 
   filter.forEach(item => {
-    station.push({id : item.id, name: item.name})
-    if(_.findIndex(monitoringType, element => {return  element.id === item.MonitoringType.id}) < 0){
-      monitoringType.push({id : item.MonitoringType.id, name: item.MonitoringType.name})
+    station.push({ id: item.id, name: item.name })
+    if (_.findIndex(monitoringType, element => { return element.id === item.MonitoringType.id }) < 0) {
+      monitoringType.push({ id: item.MonitoringType.id, name: item.MonitoringType.name })
     }
-    if(_.findIndex(monitoringGroup, element => {return  element.id === item.MonitoringGroup.id}) < 0){
-      monitoringGroup.push({id : item.MonitoringGroup.id, name: item.MonitoringGroup.name})
+    if (_.findIndex(monitoringGroup, element => { return element.id === item.MonitoringGroup.id }) < 0) {
+      monitoringGroup.push({ id: item.MonitoringGroup.id, name: item.MonitoringGroup.name })
     }
-    if(_.findIndex(district, element => {return  element.id === item.District.id}) < 0){
-      district.push({id : item.District.id, name: item.District.name})
+    if (_.findIndex(district, element => { return element.id === item.District.id }) < 0) {
+      district.push({ id: item.District.id, name: item.District.name })
     }
   })
 
-  return {monitoringType, monitoringGroup, district, station}
+  return { monitoringType, monitoringGroup, district, station }
 }
 
 export const analyzeManagerFilter = (filter) => {
@@ -362,22 +372,22 @@ export const analyzeManagerFilter = (filter) => {
   let station = []
   // console.log(filter)
   filter.forEach(item => {
-    station.push({id : item.stationId, name: item.stationName})
-    if(_.findIndex(monitoringType, element => {return  element.id === item.typeId}) < 0){
-      monitoringType.push({id : item.typeId, name: item.typeName})
+    station.push({ id: item.stationId, name: item.stationName })
+    if (_.findIndex(monitoringType, element => { return element.id === item.typeId }) < 0) {
+      monitoringType.push({ id: item.typeId, name: item.typeName })
     }
-    if(_.findIndex(monitoringGroup, element => {return  element.id === item.groupId}) < 0){
-      monitoringGroup.push({id : item.groupId, name: item.groupName})
+    if (_.findIndex(monitoringGroup, element => { return element.id === item.groupId }) < 0) {
+      monitoringGroup.push({ id: item.groupId, name: item.groupName })
     }
-    if(_.findIndex(district, element => {return  element.id === item.districtId}) < 0){
-      district.push({id : item.districtId, name: item.districtName})
+    if (_.findIndex(district, element => { return element.id === item.districtId }) < 0) {
+      district.push({ id: item.districtId, name: item.districtName })
     }
   })
-  monitoringType.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
-  monitoringGroup.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
-  district.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
-  station.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
-  return {monitoringType, monitoringGroup, district, station}
+  monitoringType.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+  monitoringGroup.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+  district.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+  station.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+  return { monitoringType, monitoringGroup, district, station }
 }
 
 export const convertMonitoringData = (monitoringDataInfo) => {
@@ -385,31 +395,31 @@ export const convertMonitoringData = (monitoringDataInfo) => {
     // console.log(dataInfo.dataValues)
     let newMonitoringData = {}
     // const newTime = moment.utc(dataInfo.dataValues.sentAt).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY HH:MM:SS')
-  // console.log(dataInfo.dataValues.sentAt)
+    // console.log(dataInfo.dataValues.sentAt)
     dataInfo.dataValues.MonitoringData.forEach(data => {
       newMonitoringData[data.indicator] = data.value
     })
-    return {...dataInfo.dataValues, MonitoringData : newMonitoringData}
+    return { ...dataInfo.dataValues, MonitoringData: newMonitoringData }
   })
 
   return newData
 }
 
-export const isEmpty =(value) => {
-  return  value === undefined ||
-          value === null ||
-          (typeof value === "object" && Object.keys(value).length === 0) ||
-          (typeof value === "string" && value.trim().length === 0)
+export const isEmpty = (value) => {
+  return value === undefined ||
+    value === null ||
+    (typeof value === "object" && Object.keys(value).length === 0) ||
+    (typeof value === "string" && value.trim().length === 0)
 }
 
 export const reformatStationData = (inputArray) => {
   let newArray = []
   inputArray.forEach(item => {
-    if(item.MonitoringDataInfos.length >0){
+    if (item.MonitoringDataInfos.length > 0) {
       let newIndicators = []
       let newData = []
       let sentAt = ''
-      if(item.StationIndicators.length > 0){
+      if (item.StationIndicators.length > 0) {
         newIndicators = item.StationIndicators.map(element => {
           return {
             id: element.Indicator.id,
@@ -423,19 +433,19 @@ export const reformatStationData = (inputArray) => {
       }
       sentAt = item.MonitoringDataInfos[0].sentAt
       newData = item.MonitoringDataInfos[0].MonitoringData
-      
+
       // app.EnviromentIndex.calculateWqiStation(newData, newIndicators)
       newArray.push({
-        id : item.id,
+        id: item.id,
         monitoringType: item.monitoringType,
         name: item.name,
         address: item.address,
-        rootLocation : item.rootLocation,
+        rootLocation: item.rootLocation,
         // envIndex : item.envIndex,
-        envIndex : app.EnviromentIndex.calculateWqiStation(newData, newIndicators),
+        envIndex: app.EnviromentIndex.calculateWqiStation(newData, newIndicators),
         latestSentAt: sentAt,
-        monitoringData : newData,
-        threshold: newIndicators   
+        monitoringData: newData,
+        threshold: newIndicators
       })
     }
   })
@@ -448,7 +458,7 @@ export const getLastFolder = (dateFolders) => {
   dateFolders.forEach(item => {
     let dateFolderInNuber = parseInt(item.replace(/_/g, ''))
     // console.log(dateFolderInNuber)
-    if(dateFolderInNuber > lastNumber){
+    if (dateFolderInNuber > lastNumber) {
       lastFolder = item
     }
   })

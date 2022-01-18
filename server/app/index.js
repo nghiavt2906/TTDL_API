@@ -49,6 +49,8 @@ import ManagerSocket from "./manager_socket"
 import StationAutoParameters from "./station_auto_parameters"
 import Route from "./routes"
 import CharacterRoute from "./character_route"
+import ApiKey from "./api_key"
+import ApiSharedStation from "./api_shared_station"
 
 class App {
   constructor() {
@@ -103,6 +105,8 @@ class App {
     this.StationAutoParameters = new StationAutoParameters()
     this.Route = new Route()
     this.CharacterRoute = new CharacterRoute()
+    this.ApiKey = new ApiKey()
+    this.ApiSharedStation = new ApiSharedStation()
   }
 }
 
