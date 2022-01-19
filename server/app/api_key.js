@@ -57,7 +57,7 @@ class ApiKey {
 				id,
 				name: apiKeyInfo.name,
 				description: apiKeyInfo.description,
-				secret: await generateSecret({ byteLength: 20 }).substring(0, 40),
+				secret: (await generateSecret({ byteLength: 20 })).substring(0, 40),
 				isReceptionApi: apiKeyInfo.type === ApiTypes.DATA_RECEPTION ? true : false,
 				receivedStationId: apiKeyInfo.type === ApiTypes.DATA_RECEPTION ? apiKeyInfo.stationId : null
 			}
