@@ -12,7 +12,13 @@ class ApiKey {
 	getAllApiKeysByType = type => models.ApiKey.findAll({
 		where: {
 			isReceptionApi: type === ApiTypes.DATA_RECEPTION
-		}
+		},
+		include: [
+			{
+				model: models.Station,
+				attributes: ["name"]
+			}
+		]
 	})
 
 	validateApiSecretKey = async (secret, apiType) => {
