@@ -8,7 +8,28 @@ import { newId } from "models/utils"
 import config from "configs"
 
 class Station {
-  constructor() {}
+  constructor() { }
+
+  getAllStationsWithoutReceptionApi = async () => {
+    const res = await models.ApiKey.findAll(
+      { attributes: ['receivedStationId'], where: { isReceptionApi: true } },
+    )
+
+    const stationIds = res.map(r => r.dataValues.receivedStationId)
+
+    const stations = await models.Station.findAll(
+      {
+        attributes: ['id', 'name'],
+        where: {
+          id: {
+            [Op.notIn]: stationIds
+          }
+        }
+      }
+    )
+
+    return stations.map(station => ({ ...station.dataValues }))
+  }
 
   getStationByArrayId(arrayId) {
     return models.Station.findAll({ where: { id: { [Op.in]: arrayId } } })
@@ -1376,32 +1397,32 @@ class Station {
 
       const stationAutoParams = !data.isManualStation
         ? {
-            alertDisconnectionStatus: data.alertDisconnectionStatus,
-            alertStructureStatus: data.alertStructureStatus,
-            alertThresholdStatus: data.alertThresholdStatus,
-          }
+          alertDisconnectionStatus: data.alertDisconnectionStatus,
+          alertStructureStatus: data.alertStructureStatus,
+          alertThresholdStatus: data.alertThresholdStatus,
+        }
         : {
-            alertDisconnectionStatus: 0,
-            alertStructureStatus: 0,
-            alertThresholdStatus: 0,
-          }
+          alertDisconnectionStatus: 0,
+          alertStructureStatus: 0,
+          alertThresholdStatus: 0,
+        }
       const stationFtp = data.isManualStation
         ? {
-            host: null,
-            username: null,
-            password: null,
-            port: null,
-            ftpFilename: null,
-            // hostFtpSample : null,
-            // usernameFtpSample: null,
-            // passwordFtpSample: null,
-            // portFtpSample: null,
-            hostFtpBotnmt: data.StationFtp.hostFtpBotnmt,
-            usernameFtpBotnmt: data.StationFtp.usernameFtpBotnmt,
-            passwordFtpBotnmt: data.StationFtp.passwordFtpBotnmt,
-            portFtpBotnmt: data.StationFtp.portFtpBotnmt,
-            ftpFilenameBotnmt: data.StationFtp.ftpFilenameBotnmt,
-          }
+          host: null,
+          username: null,
+          password: null,
+          port: null,
+          ftpFilename: null,
+          // hostFtpSample : null,
+          // usernameFtpSample: null,
+          // passwordFtpSample: null,
+          // portFtpSample: null,
+          hostFtpBotnmt: data.StationFtp.hostFtpBotnmt,
+          usernameFtpBotnmt: data.StationFtp.usernameFtpBotnmt,
+          passwordFtpBotnmt: data.StationFtp.passwordFtpBotnmt,
+          portFtpBotnmt: data.StationFtp.portFtpBotnmt,
+          ftpFilenameBotnmt: data.StationFtp.ftpFilenameBotnmt,
+        }
         : data.StationFtp
       await models.Station.update(stationInfo, { where: { id: stationId } })
       await models.StationAutoParameter.update(stationAutoParams, {

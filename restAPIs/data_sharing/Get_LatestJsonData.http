@@ -1,1 +1,1 @@
-GET http://localhost:4000/api/chiasedulieu/dulieumoinhat?apiKey=fbb12edd6ceddb1023a954f9f2af1fb1a507d9f1 HTTP/1.1
+GET http://localhost/api/chiasedulieu/dulieumoinhat?apiKey=f8f69e8f9daae2ff58f012f37f644a5802a34b1f HTTP/1.1

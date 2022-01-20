@@ -37,14 +37,15 @@ export default (expressRouter) => {
 			await app.Manager.checkManagerPermission(managerId, 'insert_station')
 
 			const id = newId()
-			await app.ApiKey.createApiKey(id, req.body)
+			const result = await app.ApiKey.createApiKey(id, req.body)
 
 			if (req.body.type === ApiTypes.DATA_SHARING) {
 				const sharedStationArray = func.renderSharedStationData(id, req.body.stationIds)
 				await app.ApiSharedStation.createSharedStations(sharedStationArray)
 			}
 
-			res.send(id)
+			const data = { id, secret: result.dataValues.secret }
+			res.json(data)
 		} catch (error) {
 			console.log(error)
 			next(error)
@@ -68,12 +69,10 @@ export default (expressRouter) => {
 			if (!apiKeyInDb.dataValues.isReceptionApi) {
 				const results = await app.ApiSharedStation.getApiSharedStationIdsByApiId(apiKeyId)
 				const apiSharedStationIds = results.map(r => r.dataValues.id)
-				const deletedNumber = await app.ApiSharedStation.deleteSharedStations(apiSharedStationIds)
-				if (deletedNumber === 0) return res.sendStatus(404)
+				await app.ApiSharedStation.deleteSharedStations(apiSharedStationIds)
 			}
 
-			const deletedNumber = await app.ApiKey.deleteApiKey(apiKeyId)
-			if (deletedNumber === 0) return res.sendStatus(404)
+			await app.ApiKey.deleteApiKey(apiKeyId)
 
 			res.sendStatus(200)
 		} catch (error) {

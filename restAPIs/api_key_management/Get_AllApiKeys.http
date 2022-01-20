@@ -1,3 +1,3 @@
 # POST http://sogtvt.monisoft.vn/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
-# GET http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK?apiType=DATA_RECEPTION HTTP/1.1
-GET http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK?apiType=DATA_SHARING HTTP/1.1
+# GET http://localhost/api/quanlyapi/eYalbMK7hA9LuufWeLcK?apiType=DATA_RECEPTION HTTP/1.1
+GET http://localhost/api/quanlyapi/eYalbMK7hA9LuufWeLcK?apiType=DATA_SHARING HTTP/1.1

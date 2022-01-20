@@ -1,10 +1,30 @@
 # POST http://sogtvt.monisoft.vn/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
-POST http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+# POST http://localhost/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+# content-type: application/json
+
+# {
+# 	"name": "Đơn vị tiếp nhận A",
+# 	"description": "Trạm: Cộng Hòa, Ngã tư Bình Phước",
+# 	"type": "DATA_SHARING",
+# 	"stationIds": ["0SyZXkuztHo42wLwBKNu", "1N5Ha0vM66maSMy3RbnD"]
+# }
+
+# POST http://localhost/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+# content-type: application/json
+
+# {
+# 	"name": "Đơn vị tiếp nhận B",
+# 	"description": "Trạm: Quang Trung, Ngã tư Bình Phước, Khu đô thị Phú Mỹ Hưng",
+# 	"type": "DATA_SHARING",
+# 	"stationIds": ["681akMtKpWVLivjsciRh", "1N5Ha0vM66maSMy3RbnD", "CcdV4R9unn9bxzS7mEON"]
+# }
+
+POST http://localhost/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
 content-type: application/json
 
 {
-	"name": "DataSharingTest",
-	"description": "API chia sẻ dữ liệu cho bên thứ ba từ các trạm",
+	"name": "Đơn vị tiếp nhận C",
+	"description": "Trạm: Cầu Trần Thị Lý, Tân Thới Hiệp",
 	"type": "DATA_SHARING",
-	"stationIds": ["TQyrEfK0emPKskdgIxDT", "1PxWtHLrQxDMl2Mzj1F0"]
+	"stationIds": ["AmGSXWxdRUtLN8pX5cXv", "SmVp0Hx6gm4a0VV4A434"]
 }
