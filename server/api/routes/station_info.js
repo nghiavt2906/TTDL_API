@@ -34,6 +34,11 @@ export default expressRouter => {
     res.send(stationData)
   })
 
+  router.get("/getAll", async (req, res, next) => {
+    const stations = await app.Station.getAllStations()
+    res.json(stations)
+  })
+
   router.get("/chuacoapikeynhandulieu", async (req, res, next) => {
     const stations = await app.Station.getAllStationsWithoutReceptionApi()
     res.json(stations)

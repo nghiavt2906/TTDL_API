@@ -10,6 +10,12 @@ import config from "configs"
 class Station {
   constructor() { }
 
+  getAllStations = async () => {
+    const stations = await models.Station.findAll({
+      attributes: ['id', 'name']
+    })
+    return stations.map(station => ({ ...station.dataValues }))
+  }
   getAllStationsWithoutReceptionApi = async () => {
     const res = await models.ApiKey.findAll(
       { attributes: ['receivedStationId'], where: { isReceptionApi: true } },
