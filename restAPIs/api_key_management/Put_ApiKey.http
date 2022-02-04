@@ -1,0 +1,28 @@
+# PUT http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+# content-type: application/json
+
+# {
+# 	"apiKeyId": "",
+# 	"apiKeyInfo": {
+# 		"name": "",
+# 		"description": "",
+# 		"secret": "",
+# 		"type": "DATA_RECEPTION"
+# 	}
+# }
+
+
+PUT http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+content-type: application/json
+
+{
+	"apiKeyId": "kDw8D9zdSacKyfqUfLDl",
+	"apiKeyInfo": {
+		"name": "Đơn vị tiếp nhận A",
+		"description": "Trạm: Cộng Hòa, Ngã tư Bình Phước",
+		"secret": "1a03ed8e94cf0396d92e1867a276731ac4fa4456",
+		"type": "DATA_SHARING",
+		"stationIds": ["0SyZXkuztHo42wLwBKNu", "1N5Ha0vM66maSMy3RbnD"]
+	}
+}
+

@@ -402,7 +402,7 @@ export const getCharacterRoutes = async (arrayPermissions) => {
   }
   const allowStationConfig = await isHavingPermission(
     [
-      "view_station_config",
+      // "view_station_config",
       "edit_station_config",
       "delete_station",
       "insert_station",

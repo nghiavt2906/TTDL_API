@@ -70,6 +70,17 @@ class ApiKey {
 		)
 	}
 
+	updateApiKey = async (id, apiKeyInfo) => {
+		return models.ApiKey.update(
+			{
+				name: apiKeyInfo.name,
+				description: apiKeyInfo.description,
+				secret: apiKeyInfo.secret
+			},
+			{ where: { id: [id] } }
+		)
+	}
+
 	deleteApiKey = id => models.ApiKey.destroy({ where: { id: [id] } })
 }
 
