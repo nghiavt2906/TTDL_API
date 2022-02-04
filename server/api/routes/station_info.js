@@ -39,6 +39,13 @@ export default expressRouter => {
     res.json(stations)
   })
 
+  router.get("/bySharingApiKeyId/:id", async (req, res, next) => {
+    const { id } = req.params
+    let stations = await app.ApiSharedStation.getStationInfosByApiId(id)
+    stations = stations.map(station => ({ id: station.stationId, name: station.Station.name }))
+    res.json(stations)
+  })
+
   router.get("/chuacoapikeynhandulieu", async (req, res, next) => {
     const stations = await app.Station.getAllStationsWithoutReceptionApi()
     res.json(stations)

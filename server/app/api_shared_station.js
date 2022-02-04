@@ -17,6 +17,17 @@ class ApiSharedStation {
 		}
 	})
 
+	getStationInfosByApiId = apiKeyId => models.ApiSharedStation.findAll({
+		attributes: ['stationId'],
+		where: { apiKeyId },
+		include: [
+			{
+				model: models.Station,
+				attributes: ['name']
+			}
+		]
+	})
+
 	createSharedStations = data => models.ApiSharedStation.bulkCreate(data)
 
 	deleteSharedStations = ids => models.ApiSharedStation.destroy({ where: { id: ids } })
