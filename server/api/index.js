@@ -34,6 +34,8 @@ import data from './routes/data'
 import approvedData from './routes/approved_latest_data'
 import stationSample from './routes/station_sample'
 import serviceCall from './routes/service_call'
+import api_key from './routes/api_key'
+import data_sharing from './routes/data_sharing'
 
 export default () => {
   const app = Router()
@@ -72,6 +74,8 @@ export default () => {
   approvedData(app)
   stationSample(app)
   serviceCall(app)
-  
+  api_key(app)
+  data_sharing(app)
+
   return app
 }

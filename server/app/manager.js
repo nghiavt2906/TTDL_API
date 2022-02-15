@@ -8,7 +8,6 @@ class Manager {
   constructor() { }
 
   async checkManagerPermission(managerId, permission) {
-    console.log('aaaaaaaaaaaaaaaaa')
     const result = await models.Manager.findAll({
       where: { id: managerId },
       attributes: ["id"],
@@ -33,7 +32,7 @@ class Manager {
         },
       ],
     })
-    console.log('qwwwwwwwwwwwwww')
+
     if (result.length === 0) {
       throw {
         status: HttpStatus.BAD_REQUEST,

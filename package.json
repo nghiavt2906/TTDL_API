@@ -12,6 +12,7 @@
   "scripts": {
     "prestart": "nvm use 16.13.2",
     "start": "nodemon --exec npx babel-node server/index.js",
+    "dev": "babel-watch server/index.js",
     "build:pkg": "rm -rf ./build/* && babel server --out-dir build && pkg . --target host --output platform",
     "build:prod": "babel server --out-dir build",
     "docker:build": "docker build -t app_service:v1 .",
@@ -34,7 +35,8 @@
     "babel-loader": "8.1.0",
     "babel-plugin-add-module-exports": "1.0.2",
     "babel-plugin-import": "1.13.0",
-    "babel-plugin-module-resolver": "3.2.0"
+    "babel-plugin-module-resolver": "3.2.0",
+    "babel-watch": "^7.7.0"
   },
   "dependencies": {
     "@hapi/joi": "16.1.8",
@@ -47,6 +49,7 @@
     "continuation-local-storage": "3.2.1",
     "cookie-parser": "1.4.5",
     "cors": "2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "8.2.0",
     "exceljs": "3.9.0",
     "express": "4.17.1",

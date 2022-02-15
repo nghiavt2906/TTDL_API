@@ -14,11 +14,11 @@ export default class Authentication {
       throw { status: HttpStatus.BAD_REQUEST, id: "api.authentication.check_manager.multi_email", messages: "Lỗi hệ thống." }
     }
 
-    // const isMatch = models.Manager.comparePassword(password, manager[0].password)
+    const isMatch = models.Manager.comparePassword(password, manager[0].password)
 
-    // if (!isMatch) {
-    //   throw { status: HttpStatus.BAD_REQUEST, id: "api.authentication.check_password.invalid", messages: "Tài khoản không tồn tại!" }
-    // }
+    if (!isMatch) {
+      throw { status: HttpStatus.BAD_REQUEST, id: "api.authentication.check_password.invalid", messages: "Mật khẩu không hợp lệ!" }
+    }
     manager[0].password = ''
     return manager[0]
   }

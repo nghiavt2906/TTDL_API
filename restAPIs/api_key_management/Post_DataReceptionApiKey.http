@@ -1,0 +1,29 @@
+# POST http://localhost:4000/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+# content-type: application/json
+
+# {
+# 	"name": "Cộng Hòa Reception API",
+# 	"description": "API nhận dữ liệu cho trạm Cộng Hòa",
+# 	"type": "DATA_RECEPTION",
+# 	"stationId": "0SyZXkuztHo42wLwBKNu"
+# }
+
+# POST http://localhost/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+# content-type: application/json
+
+# {
+# 	"name": "Lê Minh Xuân Reception API",
+# 	"description": "API nhận dữ liệu cho trạm Lê Minh Xuân",
+# 	"type": "DATA_RECEPTION",
+# 	"stationId": "aSRuDNCG3BiubH3Zyi4d"
+# }
+
+POST http://localhost/api/quanlyapi/eYalbMK7hA9LuufWeLcK HTTP/1.1
+content-type: application/json
+
+{
+	"name": "Sài Gòn Reception API",
+	"description": "API nhận dữ liệu cho trạm Sài Gòn",
+	"type": "DATA_RECEPTION",
+	"stationId": "h15wsOBYtZUcKvcHX3e5"
+}

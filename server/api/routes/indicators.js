@@ -3,7 +3,7 @@ import models from 'models'
 import * as func from "utils/functions"
 const router = Router()
 import bodyParser from 'body-parser'
-import {newId} from 'models/utils'
+import { newId } from 'models/utils'
 import app from 'app'
 
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -15,7 +15,7 @@ export default expressRouter => {
 
   router.get("/", async (req, res, next) => {
     try {
-      const {monitoringType} = req.query 
+      const { monitoringType } = req.query
       let data = {}
       let monitoringTypeData = await app.MonitoringType.getMonitoringType()
       monitoringTypeData = func.changeToArrayFilter(monitoringTypeData, 'id', 'name')
@@ -24,7 +24,7 @@ export default expressRouter => {
       data.monitoringType = monitoringTypeData
       data.indicatorInfo = indicatorData
       res.send(data)
-    }catch (error) {
+    } catch (error) {
       console.log(error)
       next(error)
     }
@@ -32,13 +32,13 @@ export default expressRouter => {
 
   router.delete("/:managerId", async (req, res, next) => {
     try {
-      const {managerId} = req.params
+      const { managerId } = req.params
       await app.Manager.checkManagerPermission(managerId, 'delete_indicator')
-      const {idIndicator} = req.query 
+      const { idIndicator } = req.query
       app.Indicator.deleteIndicator(idIndicator).then(result => {
         res.sendStatus('200')
       })
-    }catch (error) {
+    } catch (error) {
       console.log(error)
       next(error)
     }
@@ -46,14 +46,14 @@ export default expressRouter => {
 
   router.put("/:managerId", async (req, res, next) => {
     try {
-      const {managerId} = req.params
+      const { managerId } = req.params
       await app.Manager.checkManagerPermission(managerId, 'edit_indicator')
-      const {idIndicator,infoIndicator} = req.body 
+      const { idIndicator, infoIndicator } = req.body
       // console.log({idIndicator,infoIndicator})
       app.Indicator.updateIndicator(idIndicator, infoIndicator).then(result => {
         res.sendStatus('200')
       })
-    }catch (error) {
+    } catch (error) {
       console.log(error)
       next(error)
     }
@@ -61,13 +61,13 @@ export default expressRouter => {
 
   router.post("/:managerId", async (req, res, next) => {
     try {
-      const {managerId} = req.params
+      const { managerId } = req.params
       await app.Manager.checkManagerPermission(managerId, 'insert_indicator')
       let id = newId()
       // console.log(id, req.body)
       await app.Indicator.createIndicator(id, req.body)
       res.send(id)
-    }catch (error) {
+    } catch (error) {
       console.log(error)
       next(error)
     }

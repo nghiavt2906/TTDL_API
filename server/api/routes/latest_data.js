@@ -4,9 +4,9 @@ import * as func from "utils/functions"
 const router = Router()
 import bodyParser from 'body-parser'
 import app from "app"
-import {reformatStationInfo, getStationId, reformatLatestData} from 'app/utils'
+import { reformatStationInfo, getStationId, reformatLatestData } from 'app/utils'
 
-import {getFilterStation, getFilterStationByType, getFilterStationByGroup} from 'api/routes/utils'
+import { getFilterStation, getFilterStationByType, getFilterStationByGroup } from 'api/routes/utils'
 import { filter } from "lodash"
 
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -17,25 +17,25 @@ export default expressRouter => {
 
   router.get("/", async (req, res, next) => {
     // console.log(req.query)
-    const {monitoringType} = req.query 
+    const { monitoringType } = req.query
     let data = {}
     let monitoringTypeData = await app.MonitoringType.getMonitoringType()
     monitoringTypeData = func.changeToArrayFilter(monitoringTypeData, 'id', 'name')
     let monitoringGroupData = await app.MonitoringGroup.getMonitoringGroupName(monitoringType)
     monitoringGroupData = func.changeToArrayFilter(monitoringGroupData, 'id', 'name')
-    monitoringGroupData.unshift({id: 'ALL', key: 'ALL', value: 'Tất cả'})
+    monitoringGroupData.unshift({ id: 'ALL', key: 'ALL', value: 'Tất cả' })
     let stationNameData = await app.Station.findStationNameByMonitoringType(monitoringType)
     stationNameData = func.changeToArrayFilter(stationNameData, 'id', 'name')
-    stationNameData.unshift({id: 'ALL', key: 'ALL', value: 'Tất cả'})
+    stationNameData.unshift({ id: 'ALL', key: 'ALL', value: 'Tất cả' })
 
     // let stationInfoData = await app.Station.getStationInfobyRawQuery('MONITORING_TYPE',monitoringType)
-    let stationInfoData = await app.Station.getStationInfoByCondition({monitoringType: monitoringType})
+    let stationInfoData = await app.Station.getStationInfoByCondition({ monitoringType: monitoringType })
     stationInfoData = reformatStationInfo(stationInfoData)
     let arrayIdData = func.getIdData(stationInfoData)
     let monitoringData = await app.MonitoringData.findMonitoringData(arrayIdData)
 
-    let systemInfoData = await app.System.findSystemInfo('1', ['safetyThresholdColor','lowerThresholdColor','upperThresholdColor'])
-    let thresholdInfoData = await app.IndicatorThreshold.findThresholdByCondition({monitoringType : monitoringType})
+    let systemInfoData = await app.System.findSystemInfo('1', ['safetyThresholdColor', 'lowerThresholdColor', 'upperThresholdColor'])
+    let thresholdInfoData = await app.IndicatorThreshold.findThresholdByCondition({ monitoringType: monitoringType })
     thresholdInfoData = func.eleminateNestedField(thresholdInfoData, ['Indicator', 'MonitoringGroup'])
 
     data.monitoringType = monitoringTypeData
@@ -50,9 +50,9 @@ export default expressRouter => {
 
   router.get("/station", async (req, res, next) => {
     // console.log(req.query)
-    const {stationName} = req.query 
+    const { stationName } = req.query
     let data = {}
-    let stationInfoData = await app.Station.getStationInfobyRawQuery('STATION',stationName)
+    let stationInfoData = await app.Station.getStationInfobyRawQuery('STATION', stationName)
 
     let arrayIdData = func.getIdData(stationInfoData)
     // console.log({arrayIdData})
@@ -64,30 +64,30 @@ export default expressRouter => {
   })
 
   router.get("/test/:userId", async (req, res, next) => {
-    let {userId} = req.params
+    let { userId } = req.params
     let filter = await getFilterStation(userId)
     let data = {}
-    if(filter.station.length){
+    if (filter.station.length) {
       data = await getLatestDataByType(filter.defaultMonitoringType.key, filter)
     }
     res.send(data)
   })
   router.get("/type/:userId/:typeId", async (req, res, next) => {
-    let {userId, typeId} = req.params
+    let { userId, typeId } = req.params
     let filter = await getFilterStationByType(userId, typeId)
     let data = {}
-    if(filter.station.length){
+    if (filter.station.length) {
       data = await getLatestDataByType(typeId, filter)
     }
     res.send(data)
   })
 
   router.get("/group/:userId/:groupId", async (req, res, next) => {
-    
-    let {userId, groupId} = req.params
+
+    let { userId, groupId } = req.params
     let filter = await getFilterStationByGroup(userId, groupId)
     let data = {}
-    if(filter.station.length){
+    if (filter.station.length) {
       data = await getLatestDataByGroup(groupId, filter)
     }
     // console.log({data})
@@ -96,8 +96,8 @@ export default expressRouter => {
 
 
   router.get("/station/:stationId", async (req, res, next) => {
-    
-    let {userId, stationId} = req.params
+
+    let { userId, stationId } = req.params
     let data = {}
     data = await getLatestDataByStation(stationId)
     // console.log({data})
@@ -105,31 +105,31 @@ export default expressRouter => {
   })
 
   router.get("/showAll/:userId", async (req, res, next) => {
-    let {userId} = req.params
+    let { userId } = req.params
     let filter = await getFilterStation(userId)
     let data = {}
-    if(filter.station.length){
+    if (filter.station.length) {
       data = await getNewestDataByType(filter)
     }
     res.send(data)
   })
 
   router.get("/showByTypeId/:userId/:typeId", async (req, res, next) => {
-    let {userId, typeId} = req.params
+    let { userId, typeId } = req.params
     let filter = await getFilterStationByType(userId, typeId)
     let data = {}
-    if(filter.station.length){
+    if (filter.station.length) {
       data = await getNewestDataByType(filter)
     }
     res.send(data)
   })
 
   router.get("/showByGroupId/:userId/:groupId", async (req, res, next) => {
-    
-    let {userId, groupId} = req.params
+
+    let { userId, groupId } = req.params
     let filter = await getFilterStationByGroup(userId, groupId)
     let data = {}
-    if(filter.station.length){
+    if (filter.station.length) {
       data = await getNewestDataByGroup(filter)
     }
     // console.log({data})
@@ -137,8 +137,8 @@ export default expressRouter => {
   })
 
   router.get("/showByStationId/:stationId", async (req, res, next) => {
-    
-    let {stationId} = req.params
+
+    let { stationId } = req.params
     let data = {}
     data = await getNewestDataByStation(stationId)
     // console.log({data})
@@ -146,16 +146,16 @@ export default expressRouter => {
   })
 
   router.post("/:managerId", async (req, res, next) => {
-    
-    let {managerId} = req.params
-    const {stationId} = req.body
+
+    let { managerId } = req.params
+    const { stationId } = req.body
     // console.log(req.body)
     let data = await app.Station.getLatestStationData(stationId)
     data = reformatLatestData(data)
     res.send(data)
   })
 }
-async function getLatestDataByType(type, filter){
+async function getLatestDataByType(type, filter) {
   let data = {}
   let monitoringType = type
   let monitoringData = []
@@ -167,16 +167,16 @@ async function getLatestDataByType(type, filter){
   let stationInfoData = await app.Station.getStationInfoByCondition(arrayStationId)
   stationInfoData = reformatStationInfo(stationInfoData)
   let arrayIdData = func.getIdData(stationInfoData)
-  if(arrayIdData.length > 0){
+  if (arrayIdData.length > 0) {
     monitoringData = await app.MonitoringData.findMonitoringData(arrayIdData)
-    systemInfoData = await app.System.findSystemInfo('1', ['safetyThresholdColor','lowerThresholdColor','upperThresholdColor'])
-    thresholdInfoData = await app.IndicatorThreshold.findThresholdByCondition({monitoringType : monitoringType})
+    systemInfoData = await app.System.findSystemInfo('1', ['safetyThresholdColor', 'lowerThresholdColor', 'upperThresholdColor'])
+    thresholdInfoData = await app.IndicatorThreshold.findThresholdByCondition({ monitoringType: monitoringType })
     thresholdInfoData = func.eleminateNestedField(thresholdInfoData, ['Indicator', 'MonitoringGroup'])
-    
+
   }
-  filter.monitoringGroup.unshift({key: 'ALL', value: 'Tất cả'})
-  filter.station.unshift({key: 'ALL', value: 'Tất cả'})
-  
+  filter.monitoringGroup.unshift({ key: 'ALL', value: 'Tất cả' })
+  filter.station.unshift({ key: 'ALL', value: 'Tất cả' })
+
   data.monitoringType = filter.monitoringType
   data.defaultMonitoringType = filter.defaultMonitoringType
   data.monitoringGroup = filter.monitoringGroup
@@ -188,7 +188,7 @@ async function getLatestDataByType(type, filter){
   return data
 }
 
-async function getLatestDataByGroup(groupId, filter){
+async function getLatestDataByGroup(groupId, filter) {
   let monitoringGroup = groupId
   let data = {}
   let monitoringData = []
@@ -200,13 +200,13 @@ async function getLatestDataByGroup(groupId, filter){
   stationInfoData = reformatStationInfo(stationInfoData)
 
   let arrayIdData = func.getIdData(stationInfoData)
-  if(arrayIdData.length > 0){
+  if (arrayIdData.length > 0) {
     monitoringData = await app.MonitoringData.findMonitoringData(arrayIdData)
-    thresholdInfoData = await app.IndicatorThreshold.findThresholdByCondition({monitoringGroupId : monitoringGroup})
+    thresholdInfoData = await app.IndicatorThreshold.findThresholdByCondition({ monitoringGroupId: monitoringGroup })
     thresholdInfoData = func.eleminateNestedField(thresholdInfoData, ['Indicator', 'MonitoringGroup'])
   }
-  
-  filter.station.unshift({key: 'ALL', value: 'Tất cả'})
+
+  filter.station.unshift({ key: 'ALL', value: 'Tất cả' })
 
   data.stationName = filter.station
   data.stationInfo = stationInfoData
@@ -215,14 +215,14 @@ async function getLatestDataByGroup(groupId, filter){
   return data
 }
 
-async function getLatestDataByStation(stationId){
+async function getLatestDataByStation(stationId) {
   let data = {}
   let monitoringData = []
   // let stationInfoData = await app.Station.findStationInfobyRawQuery([{key: stationId}])
   let stationInfoData = await app.Station.getStationInfoByCondition([stationId])
   stationInfoData = reformatStationInfo(stationInfoData)
   let arrayIdData = func.getIdData(stationInfoData)
-  if(arrayIdData.length > 0){
+  if (arrayIdData.length > 0) {
     monitoringData = await app.MonitoringData.findMonitoringData(arrayIdData)
   }
 
@@ -234,12 +234,12 @@ async function getLatestDataByStation(stationId){
 async function getNewestDataByType(filter) {
   let arrayStationId = []
   // console.log(filter)
-  arrayStationId = filter.station.map(item => {return item.key})
+  arrayStationId = filter.station.map(item => { return item.key })
   let data = await app.Station.getLatestStationData(arrayStationId)
   data = reformatLatestData(data)
 
-  filter.monitoringGroup.unshift({key: 'ALL', value: 'Tất cả'})
-  filter.station.unshift({key: 'ALL', value: 'Tất cả'})
+  filter.monitoringGroup.unshift({ key: 'ALL', value: 'Tất cả' })
+  filter.station.unshift({ key: 'ALL', value: 'Tất cả' })
 
   return {
     filter: {
@@ -255,11 +255,11 @@ async function getNewestDataByType(filter) {
 async function getNewestDataByGroup(filter) {
   let arrayStationId = []
   // console.log(filter)
-  arrayStationId = filter.station.map(item => {return item.key})
+  arrayStationId = filter.station.map(item => { return item.key })
   let data = await app.Station.getLatestStationData(arrayStationId)
   data = reformatLatestData(data)
 
-  filter.station.unshift({key: 'ALL', value: 'Tất cả'})
+  filter.station.unshift({ key: 'ALL', value: 'Tất cả' })
 
   return {
     filter: {

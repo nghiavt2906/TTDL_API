@@ -4,7 +4,7 @@ import Sequelize from "sequelize"
 // import {changeBoleanToTinyInt} from 'utils/functions'
 
 export default (sequelize, DataTypes) => {
-  class Station extends Sequelize.Model {}
+  class Station extends Sequelize.Model { }
 
   Station.init(
     {
@@ -20,11 +20,11 @@ export default (sequelize, DataTypes) => {
       rootLocation: { type: Sequelize.STRING },
       verifiedAt: { type: Sequelize.DATE },
       verificationOrganization: { type: Sequelize.STRING },
-      isManualStation : {type: Sequelize.TINYINT, allowNull: true, defaultValue: 0},
+      isManualStation: { type: Sequelize.TINYINT, allowNull: true, defaultValue: 0 },
       // warning
-      activeState: { type: Sequelize.STRING(50), allowNull: false,  defaultValue: 'NORMAL'  },
+      activeState: { type: Sequelize.STRING(50), allowNull: false, defaultValue: 'NORMAL' },
       // activeState = 'NORMAL' || 'OVER_THRESHOLD' || 'DISCONNECT' || 'WRONG_FORMAT'
-      envIndex : {type: Sequelize.INTEGER, allowNull: true, defaultValue : null},
+      envIndex: { type: Sequelize.INTEGER, allowNull: true, defaultValue: null },
       latestSentAt: { type: Sequelize.DATE },
       sendftpStatus: { type: Sequelize.TINYINT, allowNull: false, defaultValue: 1 },
       receiveftpStatus: { type: Sequelize.TINYINT, allowNull: false, defaultValue: 0 },
@@ -37,7 +37,7 @@ export default (sequelize, DataTypes) => {
       alertStructureStatus: { type: Sequelize.TINYINT, defaultValue: 1 },
       numberOfDisconnection: { type: Sequelize.INTEGER, defaultValue: 0 },
       alertDisconnectionStatus: { type: Sequelize.TINYINT, defaultValue: 1 },
-      syncDataBotnmtStatus : { type: Sequelize.TINYINT, defaultValue: 0 },
+      syncDataBotnmtStatus: { type: Sequelize.TINYINT, defaultValue: 0 },
       activityStatus: { type: Sequelize.TINYINT, defaultValue: 1 },
       publicStatus: { type: Sequelize.TINYINT, defaultValue: 1 },
       deletedAt: { type: Sequelize.DATE }
@@ -47,20 +47,21 @@ export default (sequelize, DataTypes) => {
 
   Station.associate = models => {
     Station.hasMany(models.StationCamera, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
-    Station.hasMany(models.MonitoringDataInfo, {foreignKey: 'stationId'})
-    // Station.hasMany(models.StationIndicators, {foreignKey : 'idStation',  onDelete: 'CASCADE', hooks: true})
-    Station.hasMany(models.StationIndicators, {foreignKey : 'idStation',  onDelete: 'NO ACTION', hooks: true})
-    Station.hasOne(models.StationFtp, {foreignKey : 'stationId', onDelete: 'CASCADE', hooks: true})
-    Station.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType'})
-    Station.belongsTo(models.MonitoringGroup, { foreignKey: 'monitoringGroupId'})
-    Station.belongsTo(models.District, { foreignKey: 'districtId'})
+    Station.hasMany(models.MonitoringDataInfo, { foreignKey: 'stationId' })
+    Station.hasMany(models.StationIndicators, { foreignKey: 'idStation', onDelete: 'CASCADE', hooks: true })
+    Station.hasOne(models.StationFtp, { foreignKey: 'stationId', onDelete: 'CASCADE', hooks: true })
+    Station.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType' })
+    Station.belongsTo(models.MonitoringGroup, { foreignKey: 'monitoringGroupId' })
+    Station.belongsTo(models.District, { foreignKey: 'districtId' })
     Station.hasMany(models.Notification, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
-    Station.hasOne(models.StationAutoParameter, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true  })
-    Station.hasMany(models.ManagerStation, { foreignKey: "stationId",  onDelete: 'CASCADE', hooks: true})
-    Station.hasMany(models.SampleHistory, { foreignKey: "stationId",  onDelete: 'CASCADE', hooks: true})
+    Station.hasOne(models.StationAutoParameter, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
+    Station.hasMany(models.ManagerStation, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
+    Station.hasMany(models.SampleHistory, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
+    Station.hasOne(models.ApiKey, { foreignKey: 'receivedStationId', onDelete: 'CASCADE', hooks: true })
+    Station.hasMany(models.ApiSharedStation, { foreignKey: 'stationId', onDelete: 'CASCADE', hooks: true })
   }
 
-  
+
   return Station
 }
 

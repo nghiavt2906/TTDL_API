@@ -402,7 +402,7 @@ export const getCharacterRoutes = async (arrayPermissions) => {
   }
   const allowStationConfig = await isHavingPermission(
     [
-      "view_station_config",
+      // "view_station_config",
       "edit_station_config",
       "delete_station",
       "insert_station",
@@ -514,6 +514,7 @@ export const reformatLatestData = (inputArray) => {
   const NORMAL_COLOR = "green"
   const UNKNOWN_COLOR = "blue"
   let newArray = []
+
   inputArray.forEach((item) => {
     if (item.MonitoringDataInfos.length > 0) {
       let newData = []

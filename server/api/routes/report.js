@@ -28,11 +28,11 @@ export default (expressRouter) => {
         page,
         limit
       )
-      const diffTime = Math.abs(new Date(endAt) - new Date(startAt))
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      if (diffDays > 31){
-        throw { status: HttpStatus.BAD_REQUEST, id: "api.report", messages: "Chỉ tìm kiếm được trong khoảng thời gian nhỏ hơn 31 ngày. Vui lòng chọn lại khoảng thời gian!" }
-      }
+      // const diffTime = Math.abs(new Date(endAt) - new Date(startAt))
+      // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+      // if (diffDays > 31){
+      //   throw { status: HttpStatus.BAD_REQUEST, id: "api.report", messages: "Chỉ tìm kiếm được trong khoảng thời gian nhỏ hơn 31 ngày. Vui lòng chọn lại khoảng thời gian!" }
+      // }
       const totalData = await app.MonitoringDataInfo.getTotalData(
         stationId,
         startAt,
@@ -99,11 +99,11 @@ export default (expressRouter) => {
       let workbook = new ExcelJs.Workbook()
       let data = []
       let { stationId, startAt, endAt } = req.body
-      const diffTime = Math.abs(new Date(endAt) - new Date(startAt))
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      if (diffDays > 7){
-        throw { status: HttpStatus.BAD_REQUEST, id: "api.report.export", messages: "Chỉ xuất được dữ liệu trong vòng 7 ngày. Vui lòng chọn lại khoảng thời gian!" }
-      }
+      // const diffTime = Math.abs(new Date(endAt) - new Date(startAt))
+      // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+      // if (diffDays > 7){
+      //   throw { status: HttpStatus.BAD_REQUEST, id: "api.report.export", messages: "Chỉ xuất được dữ liệu trong vòng 7 ngày. Vui lòng chọn lại khoảng thời gian!" }
+      // }
 
       const startAtStr = moment(startAt).utc().format("DDMMYYYYHHmmss")
       const endAtStr = moment(endAt).utc().format("DDMMYYYYHHmmss")
