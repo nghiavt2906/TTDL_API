@@ -1310,8 +1310,8 @@ class Station {
           phone: info.phone,
           image:
             info.image !== ""
-              ? `http://${config.server.host}/api/file/${info.image}`
-              : `http://${config.server.host}/api/file/default.jpg`,
+              ? `/api/file/${info.image}`
+              : `/api/file/default.jpg`,
           rootLocation: info.rootLocation,
           verifiedAt: info.verifiedAt,
           verificationOrganization: info.verificationOrganization,
