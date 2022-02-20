@@ -1392,12 +1392,12 @@ class Station {
         publicStatus: data.publicStatus,
       }
       if (data.image === "" || data.image === null) {
-        stationInfo.image = `http://${config.server.host}/api/file/default.jpg`
+        stationInfo.image = `/api/file/default.jpg`
       } else {
         if (data.image.includes(config.server.host)) {
           stationInfo.image = data.image
         } else {
-          stationInfo.image = `http://${config.server.host}/api/file/${data.image}`
+          stationInfo.image = `/api/file/${data.image}`
         }
       }
 
