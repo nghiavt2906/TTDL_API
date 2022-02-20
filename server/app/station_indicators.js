@@ -3,7 +3,7 @@ import { Op } from "sequelize"
 import models from "models"
 
 class StationIndicators {
-  constructor() {}
+  constructor() { }
 
   findIndicatorByIdStation = (idStation) => {
     return models.StationIndicators.findAll({
@@ -17,7 +17,7 @@ class StationIndicators {
     return models.StationIndicators.destroy({ where: { idStation: idData } })
   }
 
-  createStationIndicator = (data) =>  {
+  createStationIndicator = (data) => {
     return models.StationIndicators.bulkCreate(data)
   }
 
@@ -31,41 +31,41 @@ class StationIndicators {
 
   getIndicators = async (stationId) => {
     let indicators = await models.StationIndicators.findAll({
-      where: {idStation : stationId},
+      where: { idStation: stationId },
       attributes: ['idIndicator', 'status'],
-      include: [{ model: models.Indicator, attributes: ["symbol","unit"], required: true }]
+      include: [{ model: models.Indicator, attributes: ["symbol", "unit"], required: true }]
     })
     let data = []
-    if(indicators.length){
+    if (indicators.length) {
       data = indicators.map(indicator => {
-        return {id : indicator.idIndicator, name: indicator.Indicator.symbol, unit: indicator.Indicator.unit, status: indicator.status }
+        return { id: indicator.idIndicator, name: indicator.Indicator.symbol, unit: indicator.Indicator.unit, status: indicator.status }
       })
     }
     return data
   }
 
   getStationIndicators = async (stationId) => {
-    return  models.StationIndicators.findAll({
-      where: {idStation : stationId},
+    return models.StationIndicators.findAll({
+      where: { idStation: stationId },
       attributes: [
         ['idIndicator', 'id'],
         [models.Sequelize.col('Indicator.symbol'), 'symbol'],
         [models.Sequelize.col('Indicator.unit'), 'unit']
       ],
-      include: [{ model: models.Indicator,order: [['symbol', 'ASC']], attributes: []}]
+      include: [{ model: models.Indicator, order: [['symbol', 'ASC']], attributes: [] }]
     })
   }
 
   getStationIndicatorsByStationId = async (stationId) => {
-    return  models.StationIndicators.findAll({
-      where: {idStation : stationId},
+    return models.StationIndicators.findAll({
+      where: { idStation: stationId },
       order: [['orderIndicator', 'ASC']],
       attributes: [
-        'idIndicator', 'upperLimit', 'lowerLimit',
+        'idIndicator', 'upperLimit', 'lowerLimit', 'image',
         [models.Sequelize.col('Indicator.symbol'), 'name'],
         [models.Sequelize.col('Indicator.unit'), 'unit']
       ],
-      include: [{ model: models.Indicator, attributes: []}]
+      include: [{ model: models.Indicator, attributes: [] }]
     })
   }
 
@@ -78,7 +78,7 @@ class StationIndicators {
         [models.Sequelize.col('Indicator.symbol'), 'name'],
         [models.Sequelize.col('Indicator.unit'), 'unit']
       ],
-      include: [{ model: models.Indicator,order: [['symbol', 'ASC']], attributes: []}]
+      include: [{ model: models.Indicator, order: [['symbol', 'ASC']], attributes: [] }]
     })
   }
 }

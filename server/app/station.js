@@ -1295,9 +1295,9 @@ class Station {
             idIndicator: item.indicatorId,
             status: item.status,
             image:
-              item.image !== ""
-                ? `/api/file/${item.image}`
-                : `/api/file/default-sensor.jpg`,
+              item.image === "" || item.image === null
+                ? `/api/file/default-sensor.jpg`
+                : `/api/file/${info.image}`,
             upperLimit: item.upperLimit,
             lowerLimit: item.lowerLimit,
             orderIndicator: index,
@@ -1313,9 +1313,9 @@ class Station {
           address: info.address,
           phone: info.phone,
           image:
-            info.image !== ""
-              ? `/api/file/${info.image}`
-              : `/api/file/default.jpg`,
+            info.image === "" || info.image === null
+              ? `/api/file/default.jpg`
+              : `/api/file/${info.image}`,
           rootLocation: info.rootLocation,
           verifiedAt: info.verifiedAt,
           verificationOrganization: info.verificationOrganization,
@@ -1375,9 +1375,9 @@ class Station {
           idIndicator: item.indicatorId,
           status: item.status,
           image:
-            item.image !== "" || item.image === null
-              ? `/api/file/${item.image}`
-              : `/api/file/default-sensor.jpg`,
+            item.image === "" || item.image === null
+              ? `/api/file/default-sensor.jpg`
+              : item.image,
           upperLimit: item.upperLimit,
           lowerLimit: item.lowerLimit,
           orderIndicator: index,
@@ -1402,7 +1402,7 @@ class Station {
       if (data.image === "" || data.image === null) {
         stationInfo.image = `/api/file/default.jpg`
       } else {
-        stationInfo.image = `/api/file/${data.image}`
+        stationInfo.image = data.image
       }
 
       const stationAutoParams = !data.isManualStation
