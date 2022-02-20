@@ -3,7 +3,7 @@ import Indicator from "./indicator"
 import MonitoringGroup from "./monitoring_group"
 
 export default (sequelize, DataTypes) => {
-  class IndicatorThreshold extends Sequelize.Model {}
+  class IndicatorThreshold extends Sequelize.Model { }
 
   IndicatorThreshold.init(
     {
@@ -21,9 +21,10 @@ export default (sequelize, DataTypes) => {
   )
 
   IndicatorThreshold.associate = (models) => {
-    IndicatorThreshold.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType'})
+    IndicatorThreshold.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType' })
     IndicatorThreshold.belongsTo(models.MonitoringGroup, { foreignKey: "monitoringGroupId" })
-    IndicatorThreshold.belongsTo(models.Indicator, { foreignKey: "indicatorId" })    
+    IndicatorThreshold.belongsTo(models.Indicator, { foreignKey: "indicatorId" })
+    IndicatorThreshold.hasOne(models.IndicatorImage, { foreignKey: 'indicatorThresholdId', onDelete: 'CASCADE', hooks: true })
   }
 
 
