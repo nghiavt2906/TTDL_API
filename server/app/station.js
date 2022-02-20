@@ -1294,6 +1294,10 @@ class Station {
             id: newId(),
             idIndicator: item.indicatorId,
             status: item.status,
+            image:
+              item.image !== ""
+                ? `/api/file/${item.image}`
+                : `/api/file/default-sensor.jpg`,
             upperLimit: item.upperLimit,
             lowerLimit: item.lowerLimit,
             orderIndicator: index,
@@ -1370,6 +1374,10 @@ class Station {
           idStation: stationId,
           idIndicator: item.indicatorId,
           status: item.status,
+          image:
+            item.image !== "" || item.image === null
+              ? `/api/file/${item.image}`
+              : `/api/file/default-sensor.jpg`,
           upperLimit: item.upperLimit,
           lowerLimit: item.lowerLimit,
           orderIndicator: index,
@@ -1394,11 +1402,7 @@ class Station {
       if (data.image === "" || data.image === null) {
         stationInfo.image = `/api/file/default.jpg`
       } else {
-        if (data.image.includes(config.server.host)) {
-          stationInfo.image = data.image
-        } else {
-          stationInfo.image = `/api/file/${data.image}`
-        }
+        stationInfo.image = `/api/file/${data.image}`
       }
 
       const stationAutoParams = !data.isManualStation
