@@ -53,7 +53,6 @@ import Notifications from "./notifications"
 import ManagerSocket from "./manager_sockets"
 import ApiKey from "./api_key"
 import ApiSharedStation from "./api_shared_station"
-import IndicatorImage from './indicator_image'
 // import Route from "./routes"
 // import MainRoute from "./main_routes"
 // import CharacterRoute from "./character_route"
@@ -212,8 +211,7 @@ const models = {
   Notifications: sequelize.import("Notifications", Notifications),
   ManagerSocket: sequelize.import("ManagerSocket", ManagerSocket),
   ApiKey: sequelize.import("ApiKey", ApiKey),
-  ApiSharedStation: sequelize.import("ApiSharedStation", ApiSharedStation),
-  IndicatorImage: sequelize.import("IndicatorImage", IndicatorImage)
+  ApiSharedStation: sequelize.import("ApiSharedStation", ApiSharedStation)
   // Route: sequelize.import("Route", Route),
   // MainRoute: sequelize.import("MainRoute", MainRoute),
   // CharacterRoute: sequelize.import("CharacterRoute", CharacterRoute),

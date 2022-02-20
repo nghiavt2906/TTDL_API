@@ -24,9 +24,7 @@ export default (sequelize, DataTypes) => {
     IndicatorThreshold.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType' })
     IndicatorThreshold.belongsTo(models.MonitoringGroup, { foreignKey: "monitoringGroupId" })
     IndicatorThreshold.belongsTo(models.Indicator, { foreignKey: "indicatorId" })
-    IndicatorThreshold.hasOne(models.IndicatorImage, { foreignKey: 'indicatorThresholdId', onDelete: 'CASCADE', hooks: true })
   }
-
 
   return IndicatorThreshold
 }
