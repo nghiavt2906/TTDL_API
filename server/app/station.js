@@ -1297,7 +1297,7 @@ class Station {
             image:
               item.image === "" || item.image === null
                 ? `/api/file/default-sensor.jpg`
-                : `/api/file/${info.image}`,
+                : `/api/file/${item.image}`,
             upperLimit: item.upperLimit,
             lowerLimit: item.lowerLimit,
             orderIndicator: index,
