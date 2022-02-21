@@ -1295,7 +1295,7 @@ class Station {
             idIndicator: item.indicatorId,
             status: item.status,
             image:
-              item.image === "" || item.image === null
+              item.image === "" || item.image === null || item.image === undefined
                 ? `/api/file/default-sensor.jpg`
                 : `/api/file/${item.image}`,
             upperLimit: item.upperLimit,
@@ -1313,7 +1313,7 @@ class Station {
           address: info.address,
           phone: info.phone,
           image:
-            info.image === "" || info.image === null
+            info.image === "" || info.image === null || info.image === undefined
               ? `/api/file/default.jpg`
               : `/api/file/${info.image}`,
           rootLocation: info.rootLocation,
@@ -1375,7 +1375,7 @@ class Station {
           idIndicator: item.indicatorId,
           status: item.status,
           image:
-            item.image === "" || item.image === null
+            item.image === "" || item.image === null || item.image === undefined
               ? `/api/file/default-sensor.jpg`
               : item.image,
           upperLimit: item.upperLimit,
@@ -1399,7 +1399,7 @@ class Station {
         activityStatus: data.activityStatus,
         publicStatus: data.publicStatus,
       }
-      if (data.image === "" || data.image === null) {
+      if (data.image === "" || data.image === null || data.image === undefined) {
         stationInfo.image = `/api/file/default.jpg`
       } else {
         stationInfo.image = data.image
