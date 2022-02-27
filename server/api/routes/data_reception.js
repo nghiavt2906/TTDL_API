@@ -215,14 +215,14 @@ export default (expressRouter) => {
         indicator: "pH",
         value: "7.36",
         unit: "",
-        sensorStatus: "01",
+        sensorStatus: "00",
       },
       {
         id: "NgI9HN3X1AQEYtdd714Q",
         indicator: "COD",
-        value: "25.89",
+        value: "295.89",
         unit: "mg/L",
-        sensorStatus: "01",
+        sensorStatus: "00",
       },
       {
         id: "RdTSD71XL92xAvK8UgNl",
@@ -255,7 +255,7 @@ export default (expressRouter) => {
     ]
     // console.log(req.body)
     // let result = await app.ManagerStation.getManagerByStationId('owyiJTM1Nb9aCt9brV4T')
-    await app.FtpSyncData.checkOverThreshold("28VQdb8xD6qDgYtRTQB5", data)
+    await app.FtpSyncData.checkOverThreshold("TQyrEfK0emPKskdgIxDT", data, new Date())
     res.send("ok")
   })
 

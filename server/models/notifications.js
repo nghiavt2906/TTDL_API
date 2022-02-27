@@ -1,7 +1,7 @@
 import Sequelize from "sequelize"
 
 export default (sequelize, DataTypes) => {
-  class Notifications extends Sequelize.Model {}
+  class Notifications extends Sequelize.Model { }
 
   Notifications.init(
     {
@@ -10,6 +10,7 @@ export default (sequelize, DataTypes) => {
       dataId: { type: Sequelize.STRING(20), allowNull: false },
       contentNotification: { type: Sequelize.TEXT },
       detail: { type: Sequelize.TEXT },
+      notiTime: { type: Sequelize.DATE, allowNull: true },
       deletedAt: { type: Sequelize.DATE, allowNull: true },
     },
     { sequelize, tableName: "notifications", modelName: "Notifications" }

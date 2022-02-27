@@ -3,10 +3,10 @@ POST http://203.205.6.12:4000/api/tiepnhandulieu?format=json HTTP/1.1
 content-type: application/json
 
 {
-	"time": "2022-02-20 16:55:00",
+	"time": "2022-02-22 20:55:10",
 	"idStation": "eU3KgTHimnZtAqiFGTcq",
 	"apiKey": "cff48a7e427d4b1515983c1d7ebd877ee4cbff66",
 	"US1": "2.21 MPa",
-	"US2": "1.72 MPa",
-	"CV1": "5.97 M"
+	"US2": "7.72 MPa",
+	"CV1": "3.97 M"
 }

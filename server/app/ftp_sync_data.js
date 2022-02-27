@@ -27,7 +27,7 @@ const config = {
 }
 
 class FtpSyncData {
-  constructor() {}
+  constructor() { }
 
   handleFtpServerRealtime = () => {
     var ftp = new Client()
@@ -749,47 +749,64 @@ class FtpSyncData {
     }
   }
 
-  sendOverThresholdAlert = async (stationId) => {
-    const notificationId = await app.Notifications.create(
+  sendOverThresholdAlert = async (stationId, overThresholdIndicators, sentAt) => {
+    const station = await models.Station.findOne({
+      attributes: ["name"],
+      raw: true,
+      where: { id: stationId },
+    })
+
+    if (configs.nodeEnv === "development") {
+      console.log(`Trạm ${station.name} vượt ngưỡng cảnh báo.`)
+    }
+
+    const title = `Trạm ${station.name} vượt ngưỡng cảnh báo.`
+    const content = `Những chỉ số quan trắc vượt ngưỡng là ${overThresholdIndicators}`
+    const notification = await app.Notifications.create(
       "OVERTHRESHOLD",
       stationId,
-      `Trạm ${stationId} vượt ngưỡng.`
+      title,
+      content,
+      moment(sentAt).utc().format()
     )
     const managers = await app.ManagerStation.getManagerByStationId(stationId)
 
     for (let manager of managers) {
-      const { managerId } = manager
-      await this.sendOverThresholdAlertToManager(managerId, notificationId)
+      manager.mailTitle = title
+      manager.mailContent = content
+      await this.sendOverThresholdAlertToManager(manager, notification.id)
     }
   }
 
-  sendOverThresholdAlertToManager = async (managerId, notificationId) => {
-    const wrongStructureSetting =
-      await app.ManagerNotificationSettings.getSettingsByType(
-        managerId,
-        "OVERTHRESHOLD"
-      )
-    const { maximumNumberOfSendingTimes, currentNumberOfSendingTimes, status } =
-      wrongStructureSetting
+  sendOverThresholdAlertToManager = async (manager, notificationId) => {
+    const { managerId, name, email, mailTitle, mailContent } = manager
+    const overThresholdSetting = await app.ManagerNotificationSettings.getSettingsByAtrributes(manager.managerId, [
+      "overThresholdAlertStatus",
+      "notificationAlertStatus",
+      "emailAlertStatus",
+    ])
+    if (!overThresholdSetting) return
 
-    if (!status) return
+    const { overThresholdAlertStatus, notificationAlertStatus, emailAlertStatus } = overThresholdSetting
+    if (!overThresholdAlertStatus) return
 
-    if (maximumNumberOfSendingTimes > currentNumberOfSendingTimes) {
-      sendWrongStructureMail()
+    if (notificationAlertStatus) {
       await app.ManagerNotifications.create(managerId, notificationId)
-      await app.ManagerNotificationSettings.update(
-        { currentNumberOfSendingTimes: currentNumberOfSendingTimes + 1 },
-        { managerId, type: "OVERTHRESHOLD" }
-      )
-      await app.ManagerNotificationSettings.update(
-        { currentNumberOfSendingTimes: 0 },
-        { managerId, type: "WRONGSTRUCTURE" }
-      )
-      await app.ManagerNotificationSettings.update(
-        { currentNumberOfSendingTimes: 0 },
-        { managerId, type: "DISCONNECT" }
-      )
-      sendSocket()
+      WS.emit(managerId)
+    }
+
+    // Check should send Alert to Email
+    if (emailAlertStatus) {
+      app.Email.sendMail({
+        subject: mailTitle,
+        content: `<p>Kính gửi: anh(chị) ${name}</p>\
+                    </br>\
+                    <p>${mailTitle} ${mailContent}. Xin hãy kiểm tra lại trạm!</p>\
+                    </br>\
+                    <p>Trân trọng,</p>\
+                    <p>Trung tâm dữ liệu Đà Nẵng.</p>`,
+        receiver: email,
+      })
     }
   }
 
@@ -815,6 +832,77 @@ class FtpSyncData {
       { currentNumberOfSendingTimes: 0 },
       { managerId, type: "DISCONNECT" }
     )
+  }
+
+  checkOverThreshold = async (stationId, data, sentAt) => {
+    const NORMAL_STATUS = "00"
+    const { monitoringGroupId } = await models.Station.findOne({
+      where: { id: stationId },
+      attributes: ["monitoringGroupId"],
+    })
+
+    const thresholds = await app.IndicatorThreshold.getIndicatorThresholdByGroupId(monitoringGroupId)
+    const result = data.map((item) => {
+      const index = _.findIndex(thresholds, (threshold) => {
+        return threshold.name === item.indicator
+      })
+
+      if (index < 0) {
+        return false
+      }
+
+
+      if (item.sensorStatus !== NORMAL_STATUS) {
+        return false
+      }
+
+      if (thresholds[index].lowerLimit > item.value || thresholds[index].upperLimit < item.value) {
+        return true
+      }
+
+      return false
+    })
+
+    let overThresholdIndicators = ""
+
+    let isFirstIndicator = true
+    result.forEach((item, index) => {
+      if (item === true) {
+        overThresholdIndicators =
+          overThresholdIndicators + (isFirstIndicator ? '' : ', ') + `${data[index].indicator}: ${data[index].value} ${data[index].unit}`
+        isFirstIndicator = false
+      }
+    })
+
+    if (result.includes(true)) {
+      let isNewUpdate = true
+      const overThresholdSettings = await app.StationAutoParameters.getOverThresholdSettings(stationId)
+
+      const latestSentAt = await app.MonitoringDataInfo.getLatestSentAt(stationId)
+
+      if (latestSentAt === null) {
+        isNewUpdate = true
+      } else {
+        Math.abs(new Date(sentAt) - new Date(latestSentAt)) > 0 ? (isNewUpdate = true) : (isNewUpdate = false)
+      }
+
+      const { numberOfAlertThreshold, alertThresholdStatus } = overThresholdSettings
+      await models.StationAutoParameter.update(
+        { isOverThreshold: 1, isDisconnect: 0, isWrongStructure: 0 },
+        { where: { stationId } }
+      )
+      if (alertThresholdStatus === 1 && isNewUpdate) {
+        this.sendOverThresholdAlert(stationId, overThresholdIndicators, sentAt)
+        await models.StationAutoParameter.update(
+          {
+            numberOfAlertStructure: 0,
+            numberOfDisconnection: 0,
+            numberOfAlertThreshold: numberOfAlertThreshold + 1,
+          },
+          { where: { stationId } }
+        )
+      }
+    }
   }
 }
 

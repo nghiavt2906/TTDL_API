@@ -3,7 +3,7 @@ import { Op, where } from "sequelize"
 import models from "models"
 
 class StationAutoParameters {
-  constructor() {}
+  constructor() { }
 
   getWrongStructureSettings = (stationId) => {
     return models.StationAutoParameter.findOne({
@@ -35,7 +35,6 @@ class StationAutoParameters {
       raw: true,
       where: { stationId },
       attributes: [
-        "defaultAlertOverThresholdTimes",
         "numberOfAlertThreshold",
         "alertThresholdStatus",
       ],

@@ -317,7 +317,17 @@ export default expressRouter => {
       }
       const stationInfo = await app.Station.getStationById(stationId)
       const indicators = await app.StationIndicators.getStationIndicatorsByStationId(stationId)
-      res.send({ stationInfo, indicators })
+
+      let indicatorImages = {}
+      for (const indicator of indicators) {
+        indicatorImages[indicator.getDataValue('name')] = {
+          indicatorId: indicator.getDataValue('idIndicator'),
+          name: indicator.getDataValue('name'),
+          image: indicator.getDataValue('image')
+        }
+      }
+
+      res.send({ stationInfo, indicators, indicatorImages })
     } catch (error) {
       console.log(error)
       next(error)

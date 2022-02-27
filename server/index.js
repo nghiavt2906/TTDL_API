@@ -19,7 +19,7 @@ platform.init()
 
 if (configs.nodeEnv === 'production') {
   const backgroundJobs = new BackgroundJobs()
-  backgroundJobs.checkSocketConnectionToCameraServer()
+  // backgroundJobs.checkSocketConnectionToCameraServer()
   backgroundJobs.checkSocketConnectionToFtpServer()
   backgroundJobs.cleanUpNotifications()
 }
