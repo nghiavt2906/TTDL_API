@@ -842,6 +842,7 @@ class FtpSyncData {
     })
 
     const thresholds = await app.IndicatorThreshold.getIndicatorThresholdByGroupId(monitoringGroupId)
+
     const result = data.map((item) => {
       const index = _.findIndex(thresholds, (threshold) => {
         return threshold.name === item.indicator
@@ -852,12 +853,16 @@ class FtpSyncData {
       }
 
 
-      if (item.sensorStatus !== NORMAL_STATUS) {
-        return false
+      // if (item.sensorStatus !== NORMAL_STATUS) {
+      //   return false
+      // }
+
+      if ((thresholds[index].lowerLimit > item.value || thresholds[index].upperLimit < item.value) && (item.sensorStatus === NORMAL_STATUS)) {
+        return true
       }
 
-      if (thresholds[index].lowerLimit > item.value || thresholds[index].upperLimit < item.value) {
-        return true
+      if (item.sensorStatus !== NORMAL_STATUS) { // check if current sensor status is overthreshold then update it to normal status
+
       }
 
       return false

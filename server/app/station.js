@@ -1568,80 +1568,80 @@ class Station {
       }
     }
 
-    if (!data.isManualStation) {
-      const isUniqueFtpFolder = await app.StationFtp.checkUniqueField({
-        ftpFolder: data.StationFtp.ftpFolder,
-      })
-      if (isCreate && !isUniqueFtpFolder) {
-        throw {
-          status: HttpStatus.BAD_REQUEST,
-          id: "api.station.config.invalid",
-          messages: "Thư mục chứa file FTP đã tồn tại!",
-        }
-      }
+    // if (!data.isManualStation) {
+    //   const isUniqueFtpFolder = await app.StationFtp.checkUniqueField({
+    //     ftpFolder: data.StationFtp.ftpFolder,
+    //   })
+    //   if (isCreate && !isUniqueFtpFolder) {
+    //     throw {
+    //       status: HttpStatus.BAD_REQUEST,
+    //       id: "api.station.config.invalid",
+    //       messages: "Thư mục chứa file FTP đã tồn tại!",
+    //     }
+    //   }
 
-      if (isEmpty(data.StationFtp.ftpFolder)) {
-        throw {
-          status: HttpStatus.BAD_REQUEST,
-          id: "api.station.config.invalid",
-          messages: "Thư mục chứa file FTP là trường bắt buộc!",
-        }
-      }
+    //   if (isEmpty(data.StationFtp.ftpFolder)) {
+    //     throw {
+    //       status: HttpStatus.BAD_REQUEST,
+    //       id: "api.station.config.invalid",
+    //       messages: "Thư mục chứa file FTP là trường bắt buộc!",
+    //     }
+    //   }
 
-      if (data.StationFtp.ftpFolder.includes("\\")) {
-        throw {
-          status: HttpStatus.BAD_REQUEST,
-          id: "api.station.config.invalid",
-          messages: `Cấu hình sai tên thư mục FTP. Sử dụng dấu '/' để phân cấp thư mục con.`,
-        }
-      }
+    //   if (data.StationFtp.ftpFolder.includes("\\")) {
+    //     throw {
+    //       status: HttpStatus.BAD_REQUEST,
+    //       id: "api.station.config.invalid",
+    //       messages: `Cấu hình sai tên thư mục FTP. Sử dụng dấu '/' để phân cấp thư mục con.`,
+    //     }
+    //   }
 
-      const isUniqueFtpFilename = await app.StationFtp.checkUniqueField({
-        ftpFilename: data.StationFtp.ftpFilename,
-      })
-      if (isCreate && !isUniqueFtpFilename) {
-        throw {
-          status: HttpStatus.BAD_REQUEST,
-          id: "api.station.config.invalid",
-          messages: "Tên file FTP đã tôn tại!",
-        }
-      }
-      if (isEmpty(data.StationFtp.ftpFilename)) {
-        throw {
-          status: HttpStatus.BAD_REQUEST,
-          id: "api.station.config.invalid",
-          messages: "Tên file FTP là trường bắt buộc!",
-        }
-      }
-      // if (isEmpty(data.StationFtp.host)) {
-      //   throw {
-      //     status: HttpStatus.BAD_REQUEST,
-      //     id: "api.station.config.invalid",
-      //     messages: "Host FTP là trường bắt buộc!",
-      //   }
-      // }
-      // if (isEmpty(data.StationFtp.username)) {
-      //   throw {
-      //     status: HttpStatus.BAD_REQUEST,
-      //     id: "api.station.config.invalid",
-      //     messages: "Username FTP là trường bắt buộc!",
-      //   }
-      // }
-      // if (isEmpty(data.StationFtp.password)) {
-      //   throw {
-      //     status: HttpStatus.BAD_REQUEST,
-      //     id: "api.station.config.invalid",
-      //     messages: "Password FTP là trường bắt buộc!",
-      //   }
-      // }
-      // if (isEmpty(data.StationFtp.port)) {
-      //   throw {
-      //     status: HttpStatus.BAD_REQUEST,
-      //     id: "api.station.config.invalid",
-      //     messages: "Port FTP là trường bắt buộc!",
-      //   }
-      // }
-    }
+    //   const isUniqueFtpFilename = await app.StationFtp.checkUniqueField({
+    //     ftpFilename: data.StationFtp.ftpFilename,
+    //   })
+    //   if (isCreate && !isUniqueFtpFilename) {
+    //     throw {
+    //       status: HttpStatus.BAD_REQUEST,
+    //       id: "api.station.config.invalid",
+    //       messages: "Tên file FTP đã tôn tại!",
+    //     }
+    //   }
+    //   if (isEmpty(data.StationFtp.ftpFilename)) {
+    //     throw {
+    //       status: HttpStatus.BAD_REQUEST,
+    //       id: "api.station.config.invalid",
+    //       messages: "Tên file FTP là trường bắt buộc!",
+    //     }
+    //   }
+    //   // if (isEmpty(data.StationFtp.host)) {
+    //   //   throw {
+    //   //     status: HttpStatus.BAD_REQUEST,
+    //   //     id: "api.station.config.invalid",
+    //   //     messages: "Host FTP là trường bắt buộc!",
+    //   //   }
+    //   // }
+    //   // if (isEmpty(data.StationFtp.username)) {
+    //   //   throw {
+    //   //     status: HttpStatus.BAD_REQUEST,
+    //   //     id: "api.station.config.invalid",
+    //   //     messages: "Username FTP là trường bắt buộc!",
+    //   //   }
+    //   // }
+    //   // if (isEmpty(data.StationFtp.password)) {
+    //   //   throw {
+    //   //     status: HttpStatus.BAD_REQUEST,
+    //   //     id: "api.station.config.invalid",
+    //   //     messages: "Password FTP là trường bắt buộc!",
+    //   //   }
+    //   // }
+    //   // if (isEmpty(data.StationFtp.port)) {
+    //   //   throw {
+    //   //     status: HttpStatus.BAD_REQUEST,
+    //   //     id: "api.station.config.invalid",
+    //   //     messages: "Port FTP là trường bắt buộc!",
+    //   //   }
+    //   // }
+    // }
 
     if (data.syncDataBotnmtStatus) {
       const isUniqueftpFilenameBotnmt = await app.StationFtp.checkUniqueField({

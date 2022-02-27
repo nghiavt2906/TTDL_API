@@ -326,8 +326,9 @@ export default expressRouter => {
           image: indicator.getDataValue('image')
         }
       }
+      stationInfo.setDataValue('indicatorImages', indicatorImages)
 
-      res.send({ stationInfo, indicators, indicatorImages })
+      res.send({ stationInfo, indicators })
     } catch (error) {
       console.log(error)
       next(error)

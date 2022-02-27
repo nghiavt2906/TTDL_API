@@ -16,7 +16,7 @@ class ApiKey {
 		include: [
 			{
 				model: models.Station,
-				attributes: ["name"]
+				attributes: ["id", "name"]
 			}
 		]
 	})

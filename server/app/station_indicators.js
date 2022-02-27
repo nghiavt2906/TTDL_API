@@ -61,7 +61,7 @@ class StationIndicators {
       where: { idStation: stationId },
       order: [['orderIndicator', 'ASC']],
       attributes: [
-        'idIndicator', 'upperLimit', 'lowerLimit', 'image',
+        'idIndicator', 'upperLimit', 'lowerLimit', 'image', 'status',
         [models.Sequelize.col('Indicator.symbol'), 'name'],
         [models.Sequelize.col('Indicator.unit'), 'unit']
       ],

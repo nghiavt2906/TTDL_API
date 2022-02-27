@@ -190,6 +190,28 @@ export default (expressRouter) => {
     }
 
     let result = req.query.format === 'json' ? await handleJsonData(req.body) : await handleXmlData(req.body)
+
+    if (req.query.format === 'json') {
+      let data = []
+      const stationIndicators = await app.StationIndicators.getStationIndicatorsByStationId(req.body.idStation)
+      for (const indicator of stationIndicators) {
+        let [value, unit] = req.body[indicator.getDataValue('name')].split(' ')
+        value = parseFloat(value)
+
+        data.push(
+          {
+            id: indicator.getDataValue('idIndicator'),
+            indicator: indicator.getDataValue('name'),
+            value,
+            unit: unit === undefined ? '' : unit,
+            sensorStatus: indicator.getDataValue('status')
+          }
+        )
+      }
+
+      await app.FtpSyncData.checkOverThreshold(req.body.idStation, data, req.body.time)
+    }
+
     res.status(result.statusCode).send(result.message)
   })
 
@@ -213,7 +235,7 @@ export default (expressRouter) => {
       {
         id: "LLkKsjfwiBCxOh13RNyz",
         indicator: "pH",
-        value: "7.36",
+        value: "17.36",
         unit: "",
         sensorStatus: "00",
       },
