@@ -1291,8 +1291,8 @@ class Station {
         await this.validateStationData(info, true)
         const indicatorNames = Object.keys(info.indicatorImages)
         const stationIndicatorData = info.indicators.map((item, index) => {
-          indicatorName = indicatorNames.find(name => info.indicatorImages[name].indicatorId == item.indicatorId)
-          indicatorImage = info.indicatorImages[indicatorName].image
+          const indicatorName = indicatorNames.find(name => info.indicatorImages[name].indicatorId == item.indicatorId)
+          const indicatorImage = info.indicatorImages[indicatorName].image
           return {
             id: newId(),
             idIndicator: item.indicatorId,
@@ -1373,8 +1373,8 @@ class Station {
       await this.validateStationData(data, false)
       const indicatorNames = Object.keys(data.indicatorImages)
       const stationIndicatorData = data.indicators.map((item, index) => {
-        indicatorName = indicatorNames.find(name => data.indicatorImages[name].indicatorId == item.indicatorId)
-        indicatorImage = data.indicatorImages[indicatorName].image
+        const indicatorName = indicatorNames.find(name => data.indicatorImages[name].indicatorId == item.indicatorId)
+        const indicatorImage = data.indicatorImages[indicatorName].image
         return {
           id: newId(),
           idStation: stationId,
