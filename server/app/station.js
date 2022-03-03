@@ -1371,10 +1371,10 @@ class Station {
     try {
       // console.log(data)
       await this.validateStationData(data, false)
-      const indicatorNames = Object.keys(info.indicatorImages)
+      const indicatorNames = Object.keys(data.indicatorImages)
       const stationIndicatorData = data.indicators.map((item, index) => {
-        indicatorName = indicatorNames.find(name => info.indicatorImages[name].indicatorId == item.indicatorId)
-        indicatorImage = info.indicatorImages[indicatorName].image
+        indicatorName = indicatorNames.find(name => data.indicatorImages[name].indicatorId == item.indicatorId)
+        indicatorImage = data.indicatorImages[indicatorName].image
         return {
           id: newId(),
           idStation: stationId,
