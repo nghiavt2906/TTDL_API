@@ -1289,15 +1289,18 @@ class Station {
       let result = await models.sequelize.transaction(async (t) => {
         let stationFtp = {}
         await this.validateStationData(info, true)
+        const indicatorNames = Object.keys(info.indicatorImages)
         const stationIndicatorData = info.indicators.map((item, index) => {
+          indicatorName = indicatorNames.find(name => info.indicatorImages[name].indicatorId == item.indicatorId)
+          indicatorImage = info.indicatorImages[indicatorName].image
           return {
             id: newId(),
             idIndicator: item.indicatorId,
             status: item.status,
             image:
-              item.image === "" || item.image === null || item.image === undefined
+              indicatorImage === "" || indicatorImage === null || indicatorImage === undefined
                 ? `/api/file/default-sensor.jpg`
-                : `/api/file/${item.image}`,
+                : `/api/file/${indicatorImage}`,
             upperLimit: item.upperLimit,
             lowerLimit: item.lowerLimit,
             orderIndicator: index,
@@ -1368,16 +1371,19 @@ class Station {
     try {
       // console.log(data)
       await this.validateStationData(data, false)
+      const indicatorNames = Object.keys(info.indicatorImages)
       const stationIndicatorData = data.indicators.map((item, index) => {
+        indicatorName = indicatorNames.find(name => info.indicatorImages[name].indicatorId == item.indicatorId)
+        indicatorImage = info.indicatorImages[indicatorName].image
         return {
           id: newId(),
           idStation: stationId,
           idIndicator: item.indicatorId,
           status: item.status,
           image:
-            item.image === "" || item.image === null || item.image === undefined
+            indicatorImage === "" || indicatorImage === null || indicatorImage === undefined
               ? `/api/file/default-sensor.jpg`
-              : item.image,
+              : indicatorImage,
           upperLimit: item.upperLimit,
           lowerLimit: item.lowerLimit,
           orderIndicator: index,
