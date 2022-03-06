@@ -74,7 +74,7 @@ export default (expressRouter) => {
         mailServer,
         mailPassword,
         mailServername,
-        emailAlertStatus: func.changeBoleanToTinyInt(emailAlertStatus),
+        alertEmailStatus: func.changeBoleanToTinyInt(emailAlertStatus),
         safetyThresholdColor,
         warningThresholdColor,
         unknownThresholdColor,

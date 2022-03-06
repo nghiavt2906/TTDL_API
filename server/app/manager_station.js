@@ -5,7 +5,7 @@ import { newId, generateToken } from "models/utils"
 import app from "app"
 import _ from "lodash"
 class ManagerStation {
-  constructor() {}
+  constructor() { }
 
   getStationByManagerId(managerId) {
     return models.ManagerStation.findAll({
@@ -176,7 +176,7 @@ class ManagerStation {
   }
 
   getStationListByCondition = (managerId, condition, statusCondition) => {
-    console.log({managerId, condition, statusCondition})
+    console.log({ managerId, condition, statusCondition })
     return models.ManagerStation.findAll({
       raw: true,
       order: [[models.Sequelize.col("Station.name"), "ASC"]],
@@ -244,7 +244,7 @@ class ManagerStation {
       include: [
         {
           model: models.Manager,
-          attributes: [],
+          attributes: ['name', 'phoneNumber'],
         },
       ],
     })

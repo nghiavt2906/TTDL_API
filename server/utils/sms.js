@@ -2,8 +2,9 @@ const request = require('request')
 const bodyParser = require('body-parser')
 const parseString = require('xml2js').parseString
 // const db = require('../Database/queryDatabase')
+import app from 'app'
 import models from 'models'
-import {getValueSystem, deleteAccents} from 'utils/functions'
+import { getValueSystem, deleteAccents } from 'utils/functions'
 
 var xmlString = `<?xml version="1.0" encoding="utf-8"?>
 <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
@@ -26,20 +27,20 @@ var xmlString = `<?xml version="1.0" encoding="utf-8"?>
 *
 * return {object} Kết quả gửi SMS
 */
-function splitSmsResult (gatewayResult)  {
+function splitSmsResult(gatewayResult) {
   let smsResult = {}
   smsResult.index = gatewayResult.substring(
-    gatewayResult.lastIndexOf("<result>") + 8, 
+    gatewayResult.lastIndexOf("<result>") + 8,
     gatewayResult.lastIndexOf("</result>")
   )
   smsResult.status = gatewayResult.substring(
-    gatewayResult.lastIndexOf("<message>") + 9, 
+    gatewayResult.lastIndexOf("<message>") + 9,
     gatewayResult.lastIndexOf("</message>")
   )
   return smsResult
 }
 
-function editXmlSms (smsInfo) {
+function editXmlSms(smsInfo) {
   return `<?xml version="1.0" encoding="utf-8"?>
     <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
     <soap12:Body>
@@ -53,23 +54,23 @@ function editXmlSms (smsInfo) {
     </soap12:Envelope>`
 }
 
-function sendSms(smsInfo){
+function sendSms(smsInfo) {
   request(
     {
       method: 'POST',
       uri: smsInfo.smsServer,
       headers: {
-        'Content-Type' : 'text/xml'
+        'Content-Type': 'text/xml'
       },
       body: editXmlSms(smsInfo),
       json: false
     },
-    function (err, res, body){
-      if(err) {
+    function (err, res, body) {
+      if (err) {
         console.log(err)
       } else {
         var result = splitSmsResult(body)
-        if(result.status === 'Success') console.log('Đã gửi tin nhắn thành công!')
+        if (result.status === 'Success') console.log('Đã gửi tin nhắn thành công!')
       }
     }
   )
@@ -78,7 +79,7 @@ function sendSms(smsInfo){
 export const sendSmsWrongStructure = async (smsData) => {
   let smsAtributes = ['smsAlertThreshold', 'smsAlertStructure', 'smsAlertDisconnection', 'smsAlertBattery', 'smsServer', 'smsUsername', 'smsPassword', 'alertSmsStatus']
   let smsParams = await models.System.findSystemInfo('1', smsAtributes)
-  let smsInfo = {} 
+  let smsInfo = {}
 
   smsData.name = deleteAccents(smsData.name)
   smsData.phoneNumber = '84773498693'
@@ -98,7 +99,7 @@ export const sendSmsWrongStructure = async (smsData) => {
 export const sendSmsDisconnection = async smsData => {
   let smsAtributes = ['smsAlertThreshold', 'smsAlertStructure', 'smsAlertDisconnection', 'smsAlertBattery', 'smsServer', 'smsUsername', 'smsPassword', 'alertSmsStatus']
   let smsParams = await models.System.findSystemInfo('1', smsAtributes)
-  let smsInfo = {} 
+  let smsInfo = {}
 
   smsData.name = deleteAccents(smsData.name)
   smsData.phoneNumber = '84773498693'
@@ -115,13 +116,14 @@ export const sendSmsDisconnection = async smsData => {
   sendSms(smsInfo)
 }
 
-export const sendSmsThreshold = async (smsData, sensors , sentTime) => {
+export const sendSmsThreshold = async (smsData, sensors, sentTime, phoneNumber) => {
   let smsAtributes = ['smsAlertThreshold', 'smsAlertStructure', 'smsAlertDisconnection', 'smsAlertBattery', 'smsServer', 'smsUsername', 'smsPassword', 'alertSmsStatus']
-  let smsParams = await models.System.findSystemInfo('1', smsAtributes)
-  let smsInfo = {} 
+  let smsParams = await app.System.findSystemInfo('1', smsAtributes)
+  let smsInfo = {}
 
   smsData.name = deleteAccents(smsData.name)
-  smsData.phoneNumber = '84773498693'
+  smsData.phoneNumber = `84${phoneNumber.substring(1)}`
+  console.log(smsData.phoneNumber)
 
   smsInfo.smsServer = getValueSystem(smsParams, 'smsServer')
   smsInfo.smsUsername = getValueSystem(smsParams, 'smsUsername')

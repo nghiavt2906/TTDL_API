@@ -750,6 +750,8 @@ class FtpSyncData {
   }
 
   sendOverThresholdAlert = async (stationId, overThresholdIndicators, sentAt) => {
+    let systemInfo = await app.System.findSystemInfo('1', ['alertEmailStatus', 'alertSmsStatus'])
+
     const station = await models.Station.findOne({
       attributes: ["name"],
       raw: true,
@@ -774,7 +776,10 @@ class FtpSyncData {
     for (let manager of managers) {
       manager.mailTitle = title
       manager.mailContent = content
-      await this.sendOverThresholdAlertToManager(manager, notification.id)
+      if (systemInfo.find(info => info.name === 'alertEmailStatus').value === '1')
+        await this.sendOverThresholdAlertToManager(manager, notification.id)
+      if (systemInfo.find(info => info.name === 'alertSmsStatus').value === '1')
+        await sms.sendSmsThreshold(station, overThresholdIndicators, sentAt, manager['Manager.phoneNumber'])
     }
   }
 
@@ -811,6 +816,8 @@ class FtpSyncData {
   }
 
   sendUnderThresholdAlert = async (stationId, underThresholdIndicators, sentAt) => {
+    let systemInfo = await app.System.findSystemInfo('1', ['alertEmailStatus', 'alertSmsStatus'])
+
     const station = await models.Station.findOne({
       attributes: ["name"],
       raw: true,
@@ -835,7 +842,8 @@ class FtpSyncData {
     for (let manager of managers) {
       manager.mailTitle = title
       manager.mailContent = content
-      await this.sendUnderThresholdAlertToManager(manager, notification.id)
+      if (systemInfo.find(info => info.name === 'alertEmailStatus').value === '1')
+        await this.sendUnderThresholdAlertToManager(manager, notification.id)
     }
   }
 
@@ -932,6 +940,7 @@ class FtpSyncData {
     let isFirstUnderthresholdIndicator = true
 
     for (const [index, item] of result.entries()) {
+      const threshold = thresholds.find(item => item.name === data[index].indicator)
       if (item === true) {
         await app.StationIndicators.updateIndicatorStatus(stationId, data[index].id, OVERTHRESHOLD_STATUS)
         overThresholdIndicators =
@@ -939,27 +948,27 @@ class FtpSyncData {
         isFirstIndicator = false
       }
       else if (data[index].sensorStatus !== NORMAL_STATUS &&
-        (thresholds[index].lowerLimit <= data[index].value && thresholds[index].upperLimit >= data[index].value)) { // check if current sensor status is overthreshold then update it to normal status
+        (threshold.lowerLimit <= data[index].value && threshold.upperLimit >= data[index].value)) { // check if current sensor status is overthreshold then update it to normal status
         await app.StationIndicators.updateIndicatorStatus(stationId, data[index].id, NORMAL_STATUS)
+
         underThresholdIndicators =
           underThresholdIndicators + (isFirstUnderthresholdIndicator ? '' : ', ') + `${data[index].indicator}: ${data[index].value} ${data[index].unit}`
         isFirstUnderthresholdIndicator = false
       }
     }
 
+    let isNewUpdate = true
+    const overThresholdSettings = await app.StationAutoParameters.getOverThresholdSettings(stationId)
+    const { numberOfAlertThreshold, alertThresholdStatus } = overThresholdSettings
+    const latestSentAt = await app.MonitoringDataInfo.getLatestSentAt(stationId)
+
+    if (latestSentAt === null) {
+      isNewUpdate = true
+    } else {
+      Math.abs(new Date(sentAt) - new Date(latestSentAt)) > 0 ? (isNewUpdate = true) : (isNewUpdate = false)
+    }
+
     if (result.includes(true)) {
-      let isNewUpdate = true
-      const overThresholdSettings = await app.StationAutoParameters.getOverThresholdSettings(stationId)
-
-      const latestSentAt = await app.MonitoringDataInfo.getLatestSentAt(stationId)
-
-      if (latestSentAt === null) {
-        isNewUpdate = true
-      } else {
-        Math.abs(new Date(sentAt) - new Date(latestSentAt)) > 0 ? (isNewUpdate = true) : (isNewUpdate = false)
-      }
-
-      const { numberOfAlertThreshold, alertThresholdStatus } = overThresholdSettings
       await models.StationAutoParameter.update(
         { isOverThreshold: 1, isDisconnect: 0, isWrongStructure: 0 },
         { where: { stationId } }
@@ -978,7 +987,9 @@ class FtpSyncData {
     }
 
     if (underThresholdIndicators.length > 0)
-      this.sendUnderThresholdAlert(stationId, underThresholdIndicators, sentAt)
+      if (alertThresholdStatus === 1 && isNewUpdate) {
+        this.sendUnderThresholdAlert(stationId, underThresholdIndicators, sentAt)
+      }
   }
 }
 
