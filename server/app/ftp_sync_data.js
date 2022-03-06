@@ -810,6 +810,67 @@ class FtpSyncData {
     }
   }
 
+  sendUnderThresholdAlert = async (stationId, underThresholdIndicators, sentAt) => {
+    const station = await models.Station.findOne({
+      attributes: ["name"],
+      raw: true,
+      where: { id: stationId },
+    })
+
+    if (configs.nodeEnv === "development") {
+      console.log(`Trạm ${station.name} về lại ngưỡng an toàn.`)
+    }
+
+    const title = `Trạm ${station.name} về lại ngưỡng an toàn.`
+    const content = `Những chỉ số quan trắc về lại ngưỡng là ${underThresholdIndicators}`
+    const notification = await app.Notifications.create(
+      "UNDERTHRESHOLD",
+      stationId,
+      title,
+      content,
+      moment(sentAt).utc().format()
+    )
+    const managers = await app.ManagerStation.getManagerByStationId(stationId)
+
+    for (let manager of managers) {
+      manager.mailTitle = title
+      manager.mailContent = content
+      await this.sendUnderThresholdAlertToManager(manager, notification.id)
+    }
+  }
+
+  sendUnderThresholdAlertToManager = async (manager, notificationId) => {
+    const { managerId, name, email, mailTitle, mailContent } = manager
+    const overThresholdSetting = await app.ManagerNotificationSettings.getSettingsByAtrributes(manager.managerId, [
+      "overThresholdAlertStatus",
+      "notificationAlertStatus",
+      "emailAlertStatus",
+    ])
+    if (!overThresholdSetting) return
+
+    const { overThresholdAlertStatus, notificationAlertStatus, emailAlertStatus } = overThresholdSetting
+    if (!overThresholdAlertStatus) return
+
+    if (notificationAlertStatus) {
+      await app.ManagerNotifications.create(managerId, notificationId)
+      WS.emit(managerId)
+    }
+
+    // Check should send Alert to Email
+    if (emailAlertStatus) {
+      app.Email.sendMail({
+        subject: mailTitle,
+        content: `<p>Kính gửi: anh(chị) ${name}</p>\
+                    </br>\
+                    <p>${mailTitle} ${mailContent}.</p>\
+                    </br>\
+                    <p>Trân trọng,</p>\
+                    <p>Trung tâm dữ liệu Đà Nẵng.</p>`,
+        receiver: email,
+      })
+    }
+  }
+
   resetNotificationSettings = async (stationId) => {
     const managers = await app.ManagerStation.getManagerByStationId(stationId)
 
@@ -836,6 +897,7 @@ class FtpSyncData {
 
   checkOverThreshold = async (stationId, data, sentAt) => {
     const NORMAL_STATUS = "00"
+    const OVERTHRESHOLD_STATUS = "01"
     const { monitoringGroupId } = await models.Station.findOne({
       where: { id: stationId },
       attributes: ["monitoringGroupId"],
@@ -852,7 +914,6 @@ class FtpSyncData {
         return false
       }
 
-
       // if (item.sensorStatus !== NORMAL_STATUS) {
       //   return false
       // }
@@ -861,23 +922,30 @@ class FtpSyncData {
         return true
       }
 
-      if (item.sensorStatus !== NORMAL_STATUS) { // check if current sensor status is overthreshold then update it to normal status
-
-      }
-
       return false
     })
 
     let overThresholdIndicators = ""
+    let underThresholdIndicators = ""
 
     let isFirstIndicator = true
-    result.forEach((item, index) => {
+    let isFirstUnderthresholdIndicator = true
+
+    for (const [index, item] of result.entries()) {
       if (item === true) {
+        await app.StationIndicators.updateIndicatorStatus(stationId, data[index].id, OVERTHRESHOLD_STATUS)
         overThresholdIndicators =
           overThresholdIndicators + (isFirstIndicator ? '' : ', ') + `${data[index].indicator}: ${data[index].value} ${data[index].unit}`
         isFirstIndicator = false
       }
-    })
+      else if (data[index].sensorStatus !== NORMAL_STATUS &&
+        (thresholds[index].lowerLimit <= data[index].value && thresholds[index].upperLimit >= data[index].value)) { // check if current sensor status is overthreshold then update it to normal status
+        await app.StationIndicators.updateIndicatorStatus(stationId, data[index].id, NORMAL_STATUS)
+        underThresholdIndicators =
+          underThresholdIndicators + (isFirstUnderthresholdIndicator ? '' : ', ') + `${data[index].indicator}: ${data[index].value} ${data[index].unit}`
+        isFirstUnderthresholdIndicator = false
+      }
+    }
 
     if (result.includes(true)) {
       let isNewUpdate = true
@@ -908,6 +976,9 @@ class FtpSyncData {
         )
       }
     }
+
+    if (underThresholdIndicators.length > 0)
+      this.sendUnderThresholdAlert(stationId, underThresholdIndicators, sentAt)
   }
 }
 

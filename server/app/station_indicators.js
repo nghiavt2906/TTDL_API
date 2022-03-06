@@ -81,6 +81,9 @@ class StationIndicators {
       include: [{ model: models.Indicator, order: [['symbol', 'ASC']], attributes: [] }]
     })
   }
+
+  updateIndicatorStatus = async (idStation, idIndicator, status) =>
+    models.StationIndicators.update({ status }, { where: { idStation, idIndicator } })
 }
 
 export default StationIndicators

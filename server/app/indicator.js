@@ -4,7 +4,7 @@ import models from "models"
 import { newId } from "models/utils"
 
 class Indicator {
-  constructor() {}
+  constructor() { }
 
   async checkExistedIndicator(symbol, monitoringType) {
     try {
@@ -18,6 +18,9 @@ class Indicator {
       throw err
     }
   }
+
+  getIndicatorById = async id => models.Indicator.findOne({ where: { id } })
+  getIndicatorBySymbols = async symbols => models.Indicator.findAll({ whereh: { symbol: symbols } })
 
   getIndicatorName = (monitoringType) => {
     return models.Indicator.findAll({

@@ -1299,8 +1299,8 @@ class Station {
             status: item.status,
             image:
               indicatorImage === "" || indicatorImage === null || indicatorImage === undefined
-                ? `/api/file/default-sensor.jpg`
-                : `/api/file/${indicatorImage}`,
+                ? `default-sensor.jpg`
+                : indicatorImage,
             upperLimit: item.upperLimit,
             lowerLimit: item.lowerLimit,
             orderIndicator: index,
@@ -1317,8 +1317,8 @@ class Station {
           phone: info.phone,
           image:
             info.image === "" || info.image === null || info.image === undefined
-              ? `/api/file/default.jpg`
-              : `/api/file/${info.image}`,
+              ? `default.jpg`
+              : info.image,
           rootLocation: info.rootLocation,
           verifiedAt: info.verifiedAt,
           verificationOrganization: info.verificationOrganization,
@@ -1382,7 +1382,7 @@ class Station {
           status: item.status,
           image:
             indicatorImage === "" || indicatorImage === null || indicatorImage === undefined
-              ? `/api/file/default-sensor.jpg`
+              ? `default-sensor.jpg`
               : indicatorImage,
           upperLimit: item.upperLimit,
           lowerLimit: item.lowerLimit,
@@ -1406,7 +1406,7 @@ class Station {
         publicStatus: data.publicStatus,
       }
       if (data.image === "" || data.image === null || data.image === undefined) {
-        stationInfo.image = `/api/file/default.jpg`
+        stationInfo.image = `default.jpg`
       } else {
         stationInfo.image = data.image
       }
