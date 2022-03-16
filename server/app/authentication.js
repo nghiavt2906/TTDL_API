@@ -65,7 +65,7 @@ export default class Authentication {
     const token = this.generateResetPasswordToken({ ...manager }, secret, '30m')
     const subject = 'Đổi mật khẩu mới'
     const content = '<p>Vui lòng nhấn vào link phía dưới để tiến hành đổi mật khẩu mới:</p>' +
-      `http://${config.server.host}/reset-password/${token}` +
+      `http://${config.server.host}/reset-password?token=${token}` +
       '<p>Lưu ý: link chỉ có hiệu lực trong vòng 30 phút</p>'
 
     try {
