@@ -121,6 +121,7 @@ class Manager {
       attributes: [
         "id",
         "characterId",
+        "password",
         "name",
         "email",
         "phoneNumber",

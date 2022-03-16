@@ -1,6 +1,8 @@
+import jwt from "jsonwebtoken"
 import HttpStatus from "http-status-codes"
 import app from "app"
 import models from "models"
+import config from "configs"
 
 export default class Authentication {
   constructor() { }
@@ -51,6 +53,65 @@ export default class Authentication {
     }
 
     return managerInfo[0]
+  }
+
+  async sendResetPasswordLinkToEmail(email) {
+    const results = await app.Manager.findManagerByEmail(email)
+    if (results.length === 0)
+      return null
+
+    const manager = results[0]
+    const secret = manager.id + manager.password
+    const token = this.generateResetPasswordToken({ ...manager }, secret, '30m')
+    const subject = 'Đổi mật khẩu mới'
+    const content = '<p>Vui lòng nhấn vào link phía dưới để tiến hành đổi mật khẩu mới:</p>' +
+      `http://${config.server.host}/reset-password/${token}` +
+      '<p>Lưu ý: link chỉ có hiệu lực trong vòng 30 phút</p>'
+
+    try {
+      await app.Email.sendMail({
+        subject,
+        content,
+        receiver: email
+      })
+      return 'ok'
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async resetPassword(token, newPassword) {
+    try {
+      const payload = jwt.decode(token)
+      if (payload === null)
+        return null
+
+      const results = await app.Manager.getManagerById(payload.info.id)
+      const manager = results[0]
+
+      const secret = payload.info.id + manager.dataValues.password
+      await jwt.verify(token, secret)
+      await models.Manager.update(
+        { password: newPassword },
+        { where: { id: payload.info.id } }
+      )
+      return 'ok'
+    } catch (error) {
+      console.error(error)
+      return null
+    }
+  }
+
+  generateResetPasswordToken(info, secret, expiresIn) {
+    return jwt.sign(
+      {
+        info
+      },
+      secret,
+      {
+        expiresIn
+      }
+    )
   }
 }
 
