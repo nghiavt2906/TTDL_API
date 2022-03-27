@@ -5,7 +5,7 @@ import HttpStatus from "http-status-codes"
 import _ from "lodash"
 
 class Character {
-  constructor() {}
+  constructor() { }
 
   async checkUniqueCharacter(name) {
     const character = await models.Character.findAll({ where: { name } })
@@ -51,7 +51,7 @@ class Character {
       permissionsList
     )
 
-    await app.CharacterRoute.createNewCharacterRoute(character.id, routeList)
+    // await app.CharacterRoute.createNewCharacterRoute(character.id, routeList)
     return this.getCharacterById(character.id)
   }
 
@@ -142,7 +142,7 @@ class Character {
       permissionList
     )
 
-    await app.CharacterRoute.createNewCharacterRoute(characterId, routeList)
+    // await app.CharacterRoute.createNewCharacterRoute(characterId, routeList)
     return this.getCharacterById(characterId)
   }
 
@@ -215,16 +215,16 @@ class Character {
       raw: true,
     })
 
-    const permissionList = permissionIdList.map(permission => ({permissionId: permission.id, permissionStatus: 1}))
-    const routeList = routeIdList.map(route => ({routeId: route.id, routeStatus: 1}))
+    const permissionList = permissionIdList.map(permission => ({ permissionId: permission.id, permissionStatus: 1 }))
+    const routeList = routeIdList.map(route => ({ routeId: route.id, routeStatus: 1 }))
 
     // console.log(permissionList, routeList)
     //Delete Character Permission
-    for(let character of characterIdList){
+    for (let character of characterIdList) {
       // console.log(character.id)
-      await models.CharacterPermission.destroy({where: {characterId: character.id}})
+      await models.CharacterPermission.destroy({ where: { characterId: character.id } })
       await app.CharacterPermission.createNewCharacterPermission(character.id, permissionList)
-      await models.CharacterRoute.destroy({where: {characterId: character.id}})
+      await models.CharacterRoute.destroy({ where: { characterId: character.id } })
       await app.CharacterRoute.createNewCharacterRoute(character.id, routeList)
     }
   }

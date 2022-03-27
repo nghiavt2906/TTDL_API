@@ -19,11 +19,11 @@ export default (expressRouter) => {
       const { managerId } = req.params
       await app.Manager.checkManagerPermission(managerId, "insert_user_group")
 
-      const { name, permissionList, routeList } = req.body
+      const { name, permission, routeList } = req.body
       console.log(req.body)
       const result = await app.Character.createNewCharacter(
         name,
-        permissionList,
+        permission,
         routeList
       )
       // const result = await app.Character.getCharacters()
@@ -106,16 +106,16 @@ export default (expressRouter) => {
     }
   })
 
-  router.put("/:characterId/:managerId", async (req, res, next) => {
+  router.put("/:managerId/:characterId", async (req, res, next) => {
     try {
       const { managerId, characterId } = req.params
       await app.Manager.checkManagerPermission(managerId, "edit_user_group")
 
-      const { name, permissionList, routeList } = req.body
+      const { name, permission, routeList } = req.body
       const result = await app.Character.updateCharacterInfo(
         characterId,
         name,
-        permissionList,
+        permission,
         routeList
       )
       // const result = await app.Character.getCharacters()
