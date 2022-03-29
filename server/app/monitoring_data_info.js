@@ -5,7 +5,7 @@ import { newId } from "models/utils"
 import moment from "moment"
 
 class MonitoringDataInfo {
-  constructor() {}
+  constructor() { }
 
   findMonitoringDataInfo = (id, content, time) => {
     return models.MonitoringDataInfo.findAll({
@@ -603,11 +603,11 @@ class MonitoringDataInfo {
   }
 
   getIndicatorData = async (stationId, indicator, startTime, endTime, limit, page) => {
-    const result =  models.MonitoringDataInfo.findAll({
+    const result = models.MonitoringDataInfo.findAll({
       // raw: true,
       order: [["sentAt", "ASC"]],
       limit: limit,
-      offset: (page-1)*limit,
+      offset: (page - 1) * limit,
       where: {
         stationId,
         sentAt: { [Op.between]: [startTime, endTime] },
