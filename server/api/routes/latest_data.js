@@ -151,6 +151,7 @@ export default expressRouter => {
     const { stationId } = req.body
     // console.log(req.body)
     let data = await app.Station.getLatestStationData(stationId)
+    console.log(data)
     data = reformatLatestData(data)
     res.send(data)
   })

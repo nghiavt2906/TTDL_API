@@ -542,6 +542,8 @@ export const reformatLatestData = (inputArray) => {
             indicator:
               item.StationIndicators[index].dataValues.Indicator.dataValues
                 .name,
+            symbol: item.StationIndicators[index].dataValues.Indicator.dataValues
+              .symbol,
             value: data.dataValues.value,
             unit: data.dataValues.unit || "",
             sentAt: item.MonitoringDataInfos[0].sentAt,

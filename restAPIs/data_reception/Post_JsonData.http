@@ -1,11 +1,11 @@
-# POST http://203.205.6.12:4000/api/tiepnhandulieu?format=json HTTP/1.1
-POST http://localhost:4000/api/tiepnhandulieu?format=json HTTP/1.1
+# POST http://localhost:4000/api/tiepnhandulieu?format=json HTTP/1.1
+POST http://203.205.6.12:4000/api/tiepnhandulieu?format=json HTTP/1.1
 content-type: application/json
 
 {
   "time": "2022-03-25 15:50:00",
   "idStation": "Lm2CVayapVlTDYa9Tfwu",
-  "apiKey": "c66940274f7bc39dacdc3e8a244dac84d9e6c6f0",
+  "apiKey": "9418796589e133a09ec7dd011a2ff3f8fc2e5a55",
   "US1": "-147.271 MPa",
   "US2": "-169.373 MPa",
   "US3": "-168.06 MPa",
