@@ -521,7 +521,7 @@ export const reformatLatestData = (inputArray) => {
       item.MonitoringDataInfos[0].MonitoringData.forEach((data) => {
         const index = _.findIndex(item.StationIndicators, (element) => {
           return (
-            element.dataValues.Indicator.dataValues.symbol ===
+            element.dataValues.Indicator.dataValues.symbol.toUpperCase() ===
             data.dataValues.indicator
           )
         })
