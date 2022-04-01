@@ -590,6 +590,21 @@ export const reformatLatestData = (inputArray) => {
         data: newData,
       })
     }
+    else {
+      newArray.push({
+        id: item.id,
+        monitoringType: item.monitoringType,
+        name: item.name,
+        address: item.address,
+        rootLocation: item.rootLocation,
+        envIndex: null,
+        latestSentAt: item.MonitoringDataInfos[0].sentAt,
+        isOverThreshold,
+        isDisconnect,
+        isBrokenDevice,
+        data: [],
+      })
+    }
   })
   return newArray
 }
