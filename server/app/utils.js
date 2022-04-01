@@ -598,7 +598,7 @@ export const reformatLatestData = (inputArray) => {
         address: item.address,
         rootLocation: item.rootLocation,
         envIndex: null,
-        latestSentAt: item.MonitoringDataInfos[0].sentAt,
+        latestSentAt: '',
         isOverThreshold,
         isDisconnect,
         isBrokenDevice,
