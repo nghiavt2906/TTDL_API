@@ -63,7 +63,7 @@ export const addIndicatorValues = (monitoringDataInfo, monitoringData, arraySens
     arraySensor.map(sensor => {
       let index = _.findIndex(monitoringData, { idData: dataInfo.idData, indicator: sensor.indicatorName.toUpperCase() })
       if (index > -1) {
-        dataInfo[sensor.indicatorName] = monitoringData[index].value
+        dataInfo[sensor.indicatorName] = monitoringData[index].value.toFixed(3)
       } else {
         dataInfo[sensor.indicatorName] = 0
       }
