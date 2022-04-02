@@ -137,7 +137,7 @@ export const reformatMonitoringData = (monitoringDataInfo, stationInfo) => {
     let newMonitoringData = {}
     // const newTime = moment.utc(dataInfo.dataValues.sentAt).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY HH:MM:SS')
     dataInfo.dataValues.MonitoringData.forEach((data) => {
-      newMonitoringData[data.indicator] = data.value
+      newMonitoringData[data.indicator] = data.value.toFixed(3)
     })
     // return {...dataInfo.dataValues, sentAt: newTime, MonitoringData : newMonitoringData}
     return { ...dataInfo.dataValues, name: stationInfo.name, symbol: stationInfo.symbol, MonitoringData: newMonitoringData }
