@@ -545,6 +545,8 @@ export const reformatLatestData = (inputArray) => {
             symbol: item.StationIndicators[index].dataValues.Indicator.dataValues
               .symbol,
             value: data.dataValues.value,
+            upperLimit: item.StationIndicators[index].dataValues.upperLimit,
+            lowerLimit: item.StationIndicators[index].dataValues.lowerLimit,
             unit: data.dataValues.unit || "",
             sentAt: item.MonitoringDataInfos[0].sentAt,
             isOverThreshold: isOverThreshold,
