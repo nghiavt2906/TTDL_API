@@ -111,6 +111,23 @@ export default (expressRouter) => {
       indicatorList = indicatorList.map((item) => {
         return item.name
       })
+
+      var reA = /[^a-zA-Z]/g;
+      var reN = /[^0-9]/g;
+      function sortColAlphaNum(a, b) {
+        var aA = a.replace(reA, "");
+        var bA = b.replace(reA, "");
+        if (aA === bA) {
+          var aN = parseInt(a.replace(reN, ""), 10);
+          var bN = parseInt(b.replace(reN, ""), 10);
+          return aN === bN ? 0 : aN > bN ? 1 : -1;
+        } else {
+          return aA > bA ? 1 : -1;
+        }
+      }
+
+      indicatorList = indicatorList.sort(sortColAlphaNum)
+
       data = await getSpecificData(stationId, startAt, endAt)
       let excelData = data.map((item, index) => {
         let row = []
