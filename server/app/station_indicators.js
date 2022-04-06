@@ -75,6 +75,8 @@ class StationIndicators {
       where: { idStation: idStation },
       attributes: [
         ['idIndicator', 'id'],
+        'lowerLimit',
+        'upperLimit',
         [models.Sequelize.col('Indicator.symbol'), 'name'],
         [models.Sequelize.col('Indicator.unit'), 'unit']
       ],

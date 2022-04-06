@@ -11,6 +11,9 @@ import bodyParser from "body-parser"
 import ExcelJs from "exceljs"
 import { Router } from "express"
 import moment from "moment"
+import * as fs from 'fs';
+import { TemplateHandler } from 'easy-template-x';
+
 const router = Router()
 import HttpStatus from "http-status-codes"
 
@@ -91,6 +94,101 @@ export default (expressRouter) => {
     }
   })
 
+  router.post("/exportDocx/:managerId", async (req, res, next) => {
+    try {
+      const { managerId } = req.params
+      await app.Manager.checkManagerPermission(managerId, "export_report")
+
+      let data = []
+      let { stationId, startAt, endAt } = req.body
+
+      const startAtStr = moment(startAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+      const endAtStr = moment(endAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+      let indicatorList = await app.StationIndicators.findIndicator(stationId)
+
+      var reA = /[^a-zA-Z]/g;
+      var reN = /[^0-9]/g;
+      function sortColAlphaNum(a, b) {
+        var aA = a.name.replace(reA, "");
+        var bA = b.name.replace(reA, "");
+        if (aA === bA) {
+          var aN = parseInt(a.name.replace(reN, ""), 10);
+          var bN = parseInt(b.name.replace(reN, ""), 10);
+          return aN === bN ? 0 : aN > bN ? 1 : -1;
+        } else {
+          return aA > bA ? 1 : -1;
+        }
+      }
+      indicatorList = indicatorList.sort(sortColAlphaNum)
+
+      data = await getSpecificData(stationId, startAt, endAt)
+
+      let monitoringDataRows = indicatorList.map(indicator => ({
+        SENSOR: indicator.name,
+        MAX: data[0].MonitoringData[indicator.name.toUpperCase()],
+        MIN: data[0].MonitoringData[indicator.name.toUpperCase()],
+        LIMIT: `${indicator.lowerLimit} to ${indicator.upperLimit}`,
+        UPPERLIMIT: indicator.upperLimit,
+        LOWERLIMIT: indicator.lowerLimit,
+        ALARM: '',
+        TIMEMAX: moment(data[0].sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss"),
+        TIMEMIN: moment(data[0].sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+      }))
+
+      let recordCount = 0
+      for (const record of data) {
+        recordCount++
+        for (const row of monitoringDataRows) {
+          const indicatorRecordValue = record.MonitoringData[row.SENSOR.toUpperCase()]
+          if (indicatorRecordValue > row.MAX) {
+            row.MAX = indicatorRecordValue
+            row.TIMEMAX = moment(record.sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+          }
+          if (indicatorRecordValue < row.MIN) {
+            row.MIN = indicatorRecordValue
+            row.TIMEMIN = moment(record.sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+          }
+
+          if (recordCount === data.length) {
+            if (row.MAX < row.LOWERLIMIT ||
+              row.MAX > row.UPPERLIMIT ||
+              row.MIN > row.UPPERLIMIT ||
+              row.MIN < row.LOWERLIMIT
+            )
+              row.ALARM = 'Canh bao'
+            else
+              row.ALARM = 'Binh thuong'
+          }
+        }
+      }
+
+      const templateFile = fs.readFileSync(`${process.cwd()}/docs/report-template.docx`)
+      const outputData = {
+        exportTime: moment().utcOffset(7).format("DD/MM/YYYY HH:mm:ss"),
+        fromTime: startAtStr,
+        toTime: endAtStr,
+        data: monitoringDataRows
+      }
+
+      const handler = new TemplateHandler();
+      const doc = await handler.process(templateFile, outputData);
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      )
+      res.setHeader(
+        "Content-Disposition",
+        `Baocao ${startAtStr} den ${endAtStr}.docx`
+      )
+      res.write(doc)
+      res.end()
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  })
+
   router.post("/export/:managerId", async (req, res, next) => {
     try {
       const { managerId } = req.params
@@ -99,11 +197,6 @@ export default (expressRouter) => {
       let workbook = new ExcelJs.Workbook()
       let data = []
       let { stationId, startAt, endAt } = req.body
-      // const diffTime = Math.abs(new Date(endAt) - new Date(startAt))
-      // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      // if (diffDays > 7){
-      //   throw { status: HttpStatus.BAD_REQUEST, id: "api.report.export", messages: "Chỉ xuất được dữ liệu trong vòng 7 ngày. Vui lòng chọn lại khoảng thời gian!" }
-      // }
 
       const startAtStr = moment(startAt).utc().format("DDMMYYYYHHmmss")
       const endAtStr = moment(endAt).utc().format("DDMMYYYYHHmmss")
