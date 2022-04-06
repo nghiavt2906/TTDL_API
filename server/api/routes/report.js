@@ -135,7 +135,7 @@ export default (expressRouter) => {
         row.push(item.name)
         row.push(moment(item.sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss"))
         indicatorList.map((element) => {
-          row.push(item.MonitoringData[element])
+          row.push(item.MonitoringData[element.toUpperCase()])
         })
         return row
       })
