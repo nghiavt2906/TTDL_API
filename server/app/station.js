@@ -803,6 +803,8 @@ class Station {
             ]
           })
 
+          if (result.length === 0)
+            continue
           const extraMonitoringData = result[0].dataValues.MonitoringData
           station.MonitoringDataInfos[0].MonitoringData = station.MonitoringDataInfos[0].MonitoringData.concat(extraMonitoringData)
 
