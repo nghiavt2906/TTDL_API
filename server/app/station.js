@@ -778,7 +778,6 @@ class Station {
 
     for (const station of results) {
       let monitoringContent = station.MonitoringDataInfos[0].dataValues.monitoringContent
-
       for (const stationIndicator of station.StationIndicators) {
         const indicatorSymbol = stationIndicator.dataValues.Indicator.dataValues.symbol
         if (!monitoringContent.includes(indicatorSymbol)) {
@@ -789,6 +788,7 @@ class Station {
             attributes: ["sentAt", "monitoringContent"],
             required: true,
             where: {
+              stationId: station.id,
               monitoringContent: {
                 [Op.like]: `%${indicatorSymbol}%`
               }
