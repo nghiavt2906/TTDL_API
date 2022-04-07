@@ -726,8 +726,8 @@ class Station {
     })
   }
 
-  getLatestStationData = (arrayStationId) => {
-    return models.Station.findAll({
+  getLatestStationData = async (arrayStationId) => {
+    let results = await models.Station.findAll({
       separate: true,
       order: [["name", "ASC"]],
       attributes: [
@@ -751,7 +751,7 @@ class Station {
           model: models.MonitoringDataInfo,
           order: [["sentAt", "DESC"]],
           limit: 1,
-          attributes: ["sentAt"],
+          attributes: ["sentAt", "monitoringContent"],
           required: true,
           include: [
             {
@@ -775,6 +775,44 @@ class Station {
         },
       ],
     })
+
+    for (const station of results) {
+      let monitoringContent = station.MonitoringDataInfos[0].dataValues.monitoringContent
+
+      for (const stationIndicator of station.StationIndicators) {
+        const indicatorSymbol = stationIndicator.dataValues.Indicator.dataValues.symbol
+        if (!monitoringContent.includes(indicatorSymbol)) {
+          const result = await models.MonitoringDataInfo.findAll({
+            separate: true,
+            order: [["sentAt", "DESC"]],
+            limit: 1,
+            attributes: ["sentAt", "monitoringContent"],
+            required: true,
+            where: {
+              monitoringContent: {
+                [Op.like]: `%${indicatorSymbol}%`
+              }
+            },
+            include: [
+              {
+                model: models.MonitoringData,
+                separate: true,
+                attributes: ["indicator", "value", "unit", "sensorStatus"],
+                required: true,
+              },
+            ]
+          })
+
+          const extraMonitoringData = result[0].dataValues.MonitoringData
+          station.MonitoringDataInfos[0].MonitoringData = station.MonitoringDataInfos[0].MonitoringData.concat(extraMonitoringData)
+
+          monitoringContent = monitoringContent + result[0].dataValues.monitoringContent
+          station.MonitoringDataInfos[0].dataValues.monitoringContent = monitoringContent
+        }
+      }
+    }
+
+    return results
   }
 
   getLatestApprovedData = (arrayStationId) => {
