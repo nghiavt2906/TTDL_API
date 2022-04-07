@@ -194,7 +194,11 @@ export default (expressRouter) => {
     if (req.query.format === 'json') {
       let data = []
       const stationIndicators = await app.StationIndicators.getStationIndicatorsByStationId(req.body.idStation)
+      const bodyKeys = Object.keys(req.body)
       for (const indicator of stationIndicators) {
+        if (!bodyKeys.includes(indicator.getDataValue('name')))
+          continue
+
         let [value, unit] = req.body[indicator.getDataValue('name')].split(' ')
         value = parseFloat(value)
 
