@@ -23,7 +23,7 @@ export default expressRouter => {
       monitoringGroupData = func.changeToArrayFilter(monitoringGroupData, 'id', 'name')
       monitoringGroupData.unshift({ id: 'ALL', key: 'ALL', value: 'Tất cả' })
       let thresholdData = await app.IndicatorThreshold.getThresholdByMonitoringType(monitoringType)
-      thresholdData = func.changeNestedField(thresholdData, 'Indicator', 'name', 'indicatorName', true)
+      thresholdData = func.changeNestedField(thresholdData, 'Indicator', 'symbol', 'indicatorName', true)
       thresholdData = func.changeNestedField(thresholdData, 'MonitoringGroup', 'name', 'groupName', false)
       let indicatorData = await app.Indicator.getIndicatorByCondition({ monitoringType: monitoringType }, ['id', 'name', 'symbol'])
       indicatorData = func.changeToArrayFilter(indicatorData, 'id', 'symbol')
