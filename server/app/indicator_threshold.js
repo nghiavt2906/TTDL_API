@@ -4,7 +4,7 @@ import { newId } from "models/utils"
 import { Op } from "sequelize"
 
 class IndicatorThreshold {
-  constructor() {}
+  constructor() { }
 
   async checkExistedThreshold(monitoringGroupId, indicatorId) {
     try {
@@ -57,7 +57,7 @@ class IndicatorThreshold {
       include: [
         {
           model: models.Indicator,
-          attributes: ["name", "unit"],
+          attributes: ["name", "symbol", "unit"],
           required: true,
         },
         { model: models.MonitoringGroup, attributes: ["name"], required: true },
