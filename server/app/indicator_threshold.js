@@ -42,7 +42,7 @@ class IndicatorThreshold {
       include: [
         {
           model: models.Indicator,
-          attributes: ["name", "unit"],
+          attributes: ["name", "symbol", "unit"],
           required: true,
         },
         { model: models.MonitoringGroup, attributes: ["name"], required: true },
