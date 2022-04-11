@@ -140,13 +140,15 @@ export default (expressRouter) => {
         recordCount++
         for (const row of monitoringDataRows) {
           const indicatorRecordValue = record.MonitoringData[row.SENSOR.toUpperCase()]
-          if (indicatorRecordValue > row.MAX || row.MAX === undefined) {
-            row.MAX = indicatorRecordValue.toFixed(3)
-            row.TIMEMAX = moment(record.sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
-          }
-          if (indicatorRecordValue < row.MIN || row.MIN === undefined) {
-            row.MIN = indicatorRecordValue.toFixed(3)
-            row.TIMEMIN = moment(record.sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+          if (indicatorRecordValue !== undefined) {
+            if (indicatorRecordValue > row.MAX || row.MAX === undefined) {
+              row.MAX = indicatorRecordValue.toFixed(3)
+              row.TIMEMAX = moment(record.sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+            }
+            if (indicatorRecordValue < row.MIN || row.MIN === undefined) {
+              row.MIN = indicatorRecordValue.toFixed(3)
+              row.TIMEMIN = moment(record.sentAt).utcOffset(0).format("DD/MM/YYYY HH:mm:ss")
+            }
           }
 
           if (recordCount === data.length) {
