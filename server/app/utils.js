@@ -590,6 +590,7 @@ export const reformatLatestData = (inputArray) => {
         isDisconnect,
         isBrokenDevice,
         data: newData,
+        dataSentFrequency: item.dataSentFrequency
       })
     }
     else {

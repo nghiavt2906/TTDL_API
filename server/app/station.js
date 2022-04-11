@@ -358,6 +358,7 @@ class Station {
       ),
       activityStatus: changeBoleanToTinyInt(info.activityStatus),
       publicStatus: changeBoleanToTinyInt(info.publicStatus),
+      dataSentFrequency: parseInt(info.dataSentFrequency)
       // disconnectionTime: info.disconnectionTime
     })
   }
@@ -738,6 +739,7 @@ class Station {
         "rootLocation",
         "envIndex",
         "latestSentAt",
+        "dataSentFrequency"
       ],
       where: {
         id: arrayStationId,
@@ -1376,6 +1378,7 @@ class Station {
             alertStructureStatus: info.alertStructureStatus,
             alertDisconnectionStatus: info.alertDisconnectionStatus,
           },
+          dataSentFrequency: info.dataSentFrequency
         }
         const newStation = await models.Station.create(data, {
           include: [models.StationIndicators, models.StationAutoParameter],
@@ -1444,6 +1447,7 @@ class Station {
         syncDataBotnmtStatus: data.syncDataBotnmtStatus,
         activityStatus: data.activityStatus,
         publicStatus: data.publicStatus,
+        dataSentFrequency: data.dataSentFrequency
       }
       if (data.image === "" || data.image === null || data.image === undefined) {
         stationInfo.image = `default.jpg`
@@ -1514,6 +1518,7 @@ class Station {
         "syncDataBotnmtStatus",
         "activityStatus",
         "publicStatus",
+        "dataSentFrequency",
         [
           models.Sequelize.col("StationAutoParameter.alertThresholdStatus"),
           "alertThresholdStatus",

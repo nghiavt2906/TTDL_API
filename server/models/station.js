@@ -40,6 +40,7 @@ export default (sequelize, DataTypes) => {
       syncDataBotnmtStatus: { type: Sequelize.TINYINT, defaultValue: 0 },
       activityStatus: { type: Sequelize.TINYINT, defaultValue: 1 },
       publicStatus: { type: Sequelize.TINYINT, defaultValue: 1 },
+      dataSentFrequency: { type: Sequelize.INTEGER, defaultValue: 60 },
       deletedAt: { type: Sequelize.DATE }
     },
     { sequelize, tableName: "stations", modelName: "Station" }
