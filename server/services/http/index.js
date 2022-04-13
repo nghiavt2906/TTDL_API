@@ -22,7 +22,7 @@ class HTTPService {
     const app = express()
     app.use(express.static(path.join(__dirname, '../../../static')))
     app.use(cors())
-    app.use(express.urlencoded({extended: true}))
+    app.use(express.urlencoded({ extended: true }))
     app.use(express.json())
     // app.use(bodyParser.json())
     app.use(cookieParser())
@@ -33,15 +33,15 @@ class HTTPService {
     app.use(config.api.prefix, routes())
 
     app.use(`${config.api.prefix}/*`, (req, res, next) => {
-      next({status: 404, id: 'api.route_not_found', messages: 'Route not found'})
+      next({ status: 404, id: 'api.route_not_found', messages: 'Route not found' })
     })
 
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, '../../../static/index.html'))
     })
-    
+
     app.use((err, req, res, next) => {
-      if(err){
+      if (err) {
         res.status(err.status || 500)
         res.json({
           id: err.id || "system errors",

@@ -561,6 +561,7 @@ export const reformatLatestData = (inputArray) => {
               : UNKNOWN_COLOR
           newData.push({
             indicator: data.dataValues.indicator,
+            symbol: data.dataValues.indicator,
             value: data.dataValues.value,
             unit: data.dataValues.unit || "",
             sentAt: item.MonitoringDataInfos[0].sentAt,
