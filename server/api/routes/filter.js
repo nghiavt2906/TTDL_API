@@ -292,7 +292,7 @@ export default (expressRouter) => {
       let district = await app.District.getDistrictName()
       let indicator = await app.Indicator.getIndicatorByCondition(
         { monitoringType: typeId },
-        ["id", ["symbol", "name"], "unit"]
+        ["id", ["symbol", "name"], ["name", "sensorType"], "unit"]
       )
       if (stationNameData.length > 0) {
         let stationId = [stationNameData[0].id]
