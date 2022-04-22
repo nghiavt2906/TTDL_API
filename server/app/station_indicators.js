@@ -80,7 +80,7 @@ class StationIndicators {
         [models.Sequelize.col('Indicator.symbol'), 'name'],
         [models.Sequelize.col('Indicator.unit'), 'unit']
       ],
-      include: [{ model: models.Indicator, order: [['symbol', 'ASC']], attributes: [] }]
+      include: [{ model: models.Indicator, order: [['symbol', 'ASC']], attributes: ['name'] }]
     })
   }
 
