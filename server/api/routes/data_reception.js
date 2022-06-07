@@ -173,7 +173,7 @@ export default (expressRouter) => {
   })
 
   router.post("/", async (req, res, next) => {
-    console.log(req.body)
+    // console.log(req.body)
     const { apiKey } = req.body
 
     try {

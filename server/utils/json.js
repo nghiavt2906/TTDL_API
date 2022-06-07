@@ -10,7 +10,7 @@ export const handleJsonData = async jsonData => {
 	let idStation = ''
 	let rawData = ''
 
-	console.log({ jsonData })
+	// console.log({ jsonData })
 	// if (json.dev === undefined || json.dev === null || json.id === undefined || json.id === null || json.time === undefined || json.time === null) {
 	//   return { statusCode: 400, message: 'WRONG FORMAT JSON' }
 	// }
