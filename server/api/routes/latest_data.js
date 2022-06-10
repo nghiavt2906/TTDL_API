@@ -146,7 +146,6 @@ export default expressRouter => {
   })
 
   router.post("/:managerId", async (req, res, next) => {
-
     let { managerId } = req.params
     const { stationId } = req.body
     // console.log(req.body)
