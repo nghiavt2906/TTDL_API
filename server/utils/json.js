@@ -3,7 +3,7 @@ const _ = require('lodash')
 import * as func from 'utils/functions'
 import app from 'app'
 
-// import models from 'models'
+import models from 'models'
 import { newId } from 'models/utils'
 
 export const handleJsonData = async jsonData => {
@@ -77,9 +77,22 @@ async function insertDataInfo(jsonObject, id) {
 	}
 }
 
-function convertObjectToArrayData(objectData, idData) {
+async function convertObjectToArrayData(objectData, idData, stationId) {
+	let stationIndicatorsInDb = await models.StationIndicators.findAll({
+		separate: true,
+		attributes: ["id"],
+		where: {
+			idStation: stationId,
+		},
+		include: {
+			model: models.Indicator,
+			attributes: ["name", "symbol", "id"]
+		},
+	})
+
 	let arrayData = []
 	for (var key in objectData) {
+		const indicatorInDb = stationIndicatorsInDb.find(item => item.Indicator.symbol === key).Indicator
 		let element = {}
 		let data = objectData[key].split(' ')
 		if (data.length === 1) {
@@ -91,6 +104,7 @@ function convertObjectToArrayData(objectData, idData) {
 		element.value = parseFloat(data[0])
 		element.unit = data[1]
 		element.sensorStatus = '01'
+		element.indicatorId = indicatorInDb.id
 		arrayData.push(element)
 	}
 	return arrayData

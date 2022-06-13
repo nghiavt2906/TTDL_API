@@ -10,6 +10,7 @@ export default (sequelize, DataTypes) => {
       // note !!!
       idData: { type: Sequelize.STRING(20), allowNull: false },
       indicator: { type: Sequelize.STRING(100), allowNull: false },
+      indicatorId: { type: Sequelize.STRING(20), allowNull: false },
       value: { type: Sequelize.FLOAT, allowNull: false },
       // note !!!
       unit: { type: Sequelize.STRING, allowNull: true },
@@ -22,6 +23,7 @@ export default (sequelize, DataTypes) => {
 
   MonitoringData.associate = (models) => {
     MonitoringData.belongsTo(models.MonitoringDataInfo, { foreignKey: "idData" })
+    MonitoringData.belongsTo(models.Indicator, { foreignKey: 'indicatorId' })
   }
 
   return MonitoringData

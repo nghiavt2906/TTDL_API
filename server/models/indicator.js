@@ -22,6 +22,7 @@ export default (sequelize, DataTypes) => {
     Indicator.hasMany(models.IndicatorThreshold, { foreignKey: "indicatorId", onDelete: 'CASCADE', hooks: true })
     Indicator.hasMany(models.StationIndicators, { foreignKey: "idIndicator", onDelete: 'CASCADE', hooks: true })
     Indicator.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType' })
+    Indicator.hasMany(models.MonitoringData, { foreignKey: 'indicatorId', onDelete: 'CASCADE', hooks: true })
   }
 
 
