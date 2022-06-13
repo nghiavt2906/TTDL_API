@@ -782,18 +782,25 @@ class Station {
       let monitoringContent = station.MonitoringDataInfos[0].dataValues.monitoringContent
       for (const stationIndicator of station.StationIndicators) {
         const indicatorSymbol = stationIndicator.dataValues.Indicator.dataValues.symbol
+
         if (!monitoringContent.includes(indicatorSymbol)) {
+          const indicatorInDb = await models.MonitoringData.findOne({
+            separate: true,
+            order: [["createdAt", "DESC"]],
+            attributes: ["indicator", "value", "unit", "sensorStatus", "idData"],
+            required: true,
+            where: {
+              indicatorId: stationIndicator.dataValues.Indicator.dataValues.id
+            }
+          })
+
           const result = await models.MonitoringDataInfo.findAll({
             separate: true,
-            order: [["sentAt", "DESC"]],
             limit: 1,
             attributes: ["sentAt", "monitoringContent"],
             required: true,
             where: {
-              stationId: station.id,
-              monitoringContent: {
-                [Op.like]: `%${indicatorSymbol}%`
-              }
+              id: indicatorInDb.dataValues.idData
             },
             include: [
               {

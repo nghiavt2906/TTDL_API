@@ -27,7 +27,7 @@ export const handleJsonData = async jsonData => {
 			return { statusCode: 400, message: 'DATA EXISTS' }
 		} else {
 			console.log('Update dữ liệu')
-			updateDataInfo(jsonData, checkData[0].id)
+			updateDataInfo(jsonData, checkData[0].id, idStation)
 			return { statusCode: 200, message: 'DATA IS UPDATED' }
 		}
 	} else {
@@ -37,7 +37,7 @@ export const handleJsonData = async jsonData => {
 	}
 }
 
-async function updateDataInfo(jsonObject, id) {
+async function updateDataInfo(jsonObject, id, stationId) {
 	let dataInfo = {}
 	let dataIndicator = {}
 
@@ -50,7 +50,7 @@ async function updateDataInfo(jsonObject, id) {
 	if (updateInfo.length > 0) {
 		let deleteData = await app.MonitoringData.deleteMonitoringData(id)
 		if (deleteData > 0) {
-			let arrayIndicatorData = convertObjectToArrayData(dataIndicator, id)
+			let arrayIndicatorData = convertObjectToArrayData(dataIndicator, id, stationId)
 			await app.MonitoringData.createMonitoringData(arrayIndicatorData)
 		}
 	}
@@ -72,7 +72,7 @@ async function insertDataInfo(jsonObject, id) {
 	let insertedInfo = await app.MonitoringDataInfo.createMonitoringDataInfo(dataInfo)
 
 	if (insertedInfo.id !== undefined) {
-		let arrayIndicatorData = convertObjectToArrayData(dataIndicator, insertedInfo.id)
+		let arrayIndicatorData = convertObjectToArrayData(dataIndicator, insertedInfo.id, id)
 		await app.MonitoringData.createMonitoringData(arrayIndicatorData)
 	}
 }
