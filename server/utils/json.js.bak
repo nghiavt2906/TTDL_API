@@ -93,6 +93,7 @@ async function convertObjectToArrayData(objectData, idData, stationId) {
 	let arrayData = []
 	for (var key in objectData) {
 		const indicatorInDb = stationIndicatorsInDb.find(item => item.dataValues.Indicator.symbol === key).dataValues.Indicator
+		console.log(indicatorInDb.id, key)
 		let element = {}
 		let data = objectData[key].split(' ')
 		if (data.length === 1) {
