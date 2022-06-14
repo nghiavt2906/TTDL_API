@@ -49,7 +49,7 @@ export default (sequelize, DataTypes) => {
   Station.associate = models => {
     Station.hasMany(models.StationCamera, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
     Station.hasMany(models.MonitoringDataInfo, { foreignKey: 'stationId' })
-    Station.hasMany(models.StationIndicators, { foreignKey: 'idStation', onDelete: 'CASCADE', hooks: true })
+    Station.hasMany(models.StationIndicators, { foreignKey: 'idStation', onDelete: 'NO ACTION', hooks: true })
     Station.hasOne(models.StationFtp, { foreignKey: 'stationId', onDelete: 'CASCADE', hooks: true })
     Station.belongsTo(models.MonitoringType, { foreignKey: 'monitoringType' })
     Station.belongsTo(models.MonitoringGroup, { foreignKey: 'monitoringGroupId' })
@@ -60,6 +60,7 @@ export default (sequelize, DataTypes) => {
     Station.hasMany(models.SampleHistory, { foreignKey: "stationId", onDelete: 'CASCADE', hooks: true })
     Station.hasOne(models.ApiKey, { foreignKey: 'receivedStationId', onDelete: 'CASCADE', hooks: true })
     Station.hasMany(models.ApiSharedStation, { foreignKey: 'stationId', onDelete: 'CASCADE', hooks: true })
+    Station.hasMany(models.MonitoringData, { foreignKey: 'stationId', onDelete: 'CASCADE', hooks: true })
   }
 
 

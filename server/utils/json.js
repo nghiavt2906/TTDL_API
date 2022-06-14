@@ -105,6 +105,7 @@ async function convertObjectToArrayData(objectData, idData, stationId) {
 		element.unit = data[1]
 		element.sensorStatus = '01'
 		element.indicatorId = indicatorInDb.id
+		element.stationId = stationId
 		arrayData.push(element)
 	}
 	return arrayData

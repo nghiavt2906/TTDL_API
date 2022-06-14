@@ -790,7 +790,8 @@ class Station {
             attributes: ["indicator", "value", "unit", "sensorStatus", "idData"],
             required: true,
             where: {
-              indicatorId: stationIndicator.dataValues.Indicator.dataValues.id
+              indicatorId: stationIndicator.dataValues.Indicator.dataValues.id,
+              stationId: station.id
             }
           })
 
