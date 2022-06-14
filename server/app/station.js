@@ -795,6 +795,9 @@ class Station {
             }
           })
 
+          if (indicatorInDb === undefined || indicatorInDb === null)
+            continue
+
           const result = await models.MonitoringDataInfo.findAll({
             separate: true,
             limit: 1,
