@@ -1,35 +1,55 @@
 import { Router } from "express"
-import models from 'models'
+import path from "path"
+import models from "models"
 import * as func from "utils/functions"
 const router = Router()
-import bodyParser from 'body-parser'
-import multer from 'multer'
+import bodyParser from "body-parser"
+import multer from "multer"
 import { newId } from "models/utils"
-import app from 'app'
+import app from "app"
 import HttpStatus from "http-status-codes"
-import { isEmpty } from 'utils/functions'
-import { getStationIndicators } from 'app/utils'
-import asyncMiddleware from 'lib/asyncMiddleware'
+import { isEmpty } from "utils/functions"
+import { getStationIndicators } from "app/utils"
+import asyncMiddleware from "lib/asyncMiddleware"
 
-router.use(bodyParser.urlencoded({ extended: false }));
-router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: false }))
+router.use(bodyParser.json())
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'public')
+    cb(null, "public")
   },
   filename: function (req, file, cb) {
     // cb(null, Date.now() + '-' +file.originalname )
-    cb(null, newId() + '-' + file.originalname)
-  }
+    let ext = path.extname(file.originalname)
+    // cb(null, newId() + "-" + file.originalname)
+    cb(null, newId() + ext)
+  },
 })
 
-var upload = multer({ storage: storage }).single('file')
-var multiUpload = multer({ storage }).array('files')
+var upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname)
+    if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
+      return callback(new multer.MulterError("Only image is allowed"))
+    }
+    callback(null, true)
+  },
+}).single("file")
+var multiUpload = multer({
+  storage,
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname)
+    if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
+      return callback(new multer.MulterError("Only images are allowed"))
+    }
+    callback(null, true)
+  },
+}).array("files")
 
-export default expressRouter => {
+export default (expressRouter) => {
   expressRouter.use("/quanlytram", router)
-
 
   router.get("/", async (req, res, next) => {
     // console.log(req.query)
@@ -39,29 +59,50 @@ export default expressRouter => {
     let stationInfo = []
 
     let monitoringTypeData = await app.MonitoringType.getMonitoringType()
-    monitoringTypeData = func.changeToArrayFilter(monitoringTypeData, 'id', 'name')
+    monitoringTypeData = func.changeToArrayFilter(
+      monitoringTypeData,
+      "id",
+      "name"
+    )
 
-    let monitoringGroupData = await app.MonitoringGroup.getMonitoringGroupName(monitoringType)
-    monitoringGroupData = func.changeToArrayFilter(monitoringGroupData, 'id', 'name')
-    monitoringGroupData.unshift({ id: 'ALL', key: 'ALL', value: 'Tất cả' })
+    let monitoringGroupData = await app.MonitoringGroup.getMonitoringGroupName(
+      monitoringType
+    )
+    monitoringGroupData = func.changeToArrayFilter(
+      monitoringGroupData,
+      "id",
+      "name"
+    )
+    monitoringGroupData.unshift({ id: "ALL", key: "ALL", value: "Tất cả" })
 
-    let stationNameData = await app.Station.findStationNameByMonitoringType(monitoringType)
+    let stationNameData = await app.Station.findStationNameByMonitoringType(
+      monitoringType
+    )
     if (stationNameData.length > 0) {
-      stationInfo = await app.Station.findOneStationInfo({ id: stationNameData[0].id })
-      stationNameData = func.changeToArrayFilter(stationNameData, 'id', 'name')
+      stationInfo = await app.Station.findOneStationInfo({
+        id: stationNameData[0].id,
+      })
+      stationNameData = func.changeToArrayFilter(stationNameData, "id", "name")
     }
 
-    // let monitoringGroupId = monitoringGroupData[1].key 
-    // let stationInfo = await app.Station.findOneStationInfo({monitoringGroupId : monitoringGroupId}) 
+    // let monitoringGroupId = monitoringGroupData[1].key
+    // let stationInfo = await app.Station.findOneStationInfo({monitoringGroupId : monitoringGroupId})
 
     if (stationInfo.length > 0) {
-      stationIndicatorsData = await app.StationIndicators.findIndicatorByIdStation(stationInfo[0]['id'])
-      stationIndicatorsData = func.eleminateNestedField(stationIndicatorsData, ['Indicator'])
+      stationIndicatorsData =
+        await app.StationIndicators.findIndicatorByIdStation(
+          stationInfo[0]["id"]
+        )
+      stationIndicatorsData = func.eleminateNestedField(stationIndicatorsData, [
+        "Indicator",
+      ])
     }
 
-
-    let indicatorData = await app.Indicator.getIndicatorByCondition({ monitoringType: monitoringType }, ['id', 'name', 'symbol'])
-    indicatorData = func.changeToArrayReactSelect(indicatorData, 'id', 'name')
+    let indicatorData = await app.Indicator.getIndicatorByCondition(
+      { monitoringType: monitoringType },
+      ["id", "name", "symbol"]
+    )
+    indicatorData = func.changeToArrayReactSelect(indicatorData, "id", "name")
     // console.log({indicatorData})
 
     data.monitoringType = monitoringTypeData
@@ -74,18 +115,24 @@ export default expressRouter => {
   })
 
   router.get("/group", async (req, res, next) => {
-
     // console.log('------------------> Here')
     // console.log(req.query)
     const { monitoringGroup } = req.query
     let data = {}
     let stationIndicatorsData = []
-    let stationNameData = await app.Station.findStationNameByMonitoringGroup(monitoringGroup)
-    stationNameData = func.changeToArrayFilter(stationNameData, 'id', 'name')
+    let stationNameData = await app.Station.findStationNameByMonitoringGroup(
+      monitoringGroup
+    )
+    stationNameData = func.changeToArrayFilter(stationNameData, "id", "name")
 
-    let stationInfo = await app.Station.findOneStationInfo({ monitoringGroupId: monitoringGroup })
+    let stationInfo = await app.Station.findOneStationInfo({
+      monitoringGroupId: monitoringGroup,
+    })
     if (stationInfo.length > 0) {
-      stationIndicatorsData = await app.StationIndicators.findIndicatorByIdStation(stationInfo[0]['id'])
+      stationIndicatorsData =
+        await app.StationIndicators.findIndicatorByIdStation(
+          stationInfo[0]["id"]
+        )
     }
 
     data.stationName = stationNameData
@@ -100,7 +147,8 @@ export default expressRouter => {
     let data = {}
     let stationInfo = await app.Station.findOneStationInfo({ id: stationName })
     // console.log('stationId',stationInfo[0]['id'] )
-    let stationIndicatorsData = await app.StationIndicators.findIndicatorByIdStation(stationInfo[0]['id'])
+    let stationIndicatorsData =
+      await app.StationIndicators.findIndicatorByIdStation(stationInfo[0]["id"])
 
     data.stationInfo = stationInfo
     data.stationIndicators = stationIndicatorsData
@@ -111,10 +159,16 @@ export default expressRouter => {
     // console.log(req)
     const { monitoringType } = req.query
     let data = {}
-    let monitoringGroupData = await app.MonitoringGroup.getMonitoringGroupName(monitoringType)
-    monitoringGroupData = func.changeToArrayFilter(monitoringGroupData, 'id', 'name')
+    let monitoringGroupData = await app.MonitoringGroup.getMonitoringGroupName(
+      monitoringType
+    )
+    monitoringGroupData = func.changeToArrayFilter(
+      monitoringGroupData,
+      "id",
+      "name"
+    )
     let indicatorData = await app.Indicator.getIndicatorByType(monitoringType)
-    indicatorData = func.changeToArrayReactSelect(indicatorData, 'id', 'name')
+    indicatorData = func.changeToArrayReactSelect(indicatorData, "id", "name")
 
     data.monitoringGroup = monitoringGroupData
     data.indicatorData = indicatorData
@@ -124,33 +178,39 @@ export default expressRouter => {
   router.put("/testUpdate/:managerId", async (req, res, next) => {
     try {
       const { managerId } = req.params
-      await app.Manager.checkManagerPermission(managerId, 'edit_station_config')
+      await app.Manager.checkManagerPermission(managerId, "edit_station_config")
 
       // console.log(req)
       const { idStation, infoStation } = req.body
       // console.log({idStation,infoStation})
 
       let stationFields = {
-        'monitoringType': infoStation.monitoringType,
-        'name': infoStation.name,
-        'monitoringGroupId': infoStation.monitoringGroup,
-        'symbol': infoStation.symbol,
-        'address': infoStation.address,
-        'phone': infoStation.phone,
-        'image': infoStation.image,
-        'rootLocation': infoStation.rootLocation,
+        monitoringType: infoStation.monitoringType,
+        name: infoStation.name,
+        monitoringGroupId: infoStation.monitoringGroup,
+        symbol: infoStation.symbol,
+        address: infoStation.address,
+        phone: infoStation.phone,
+        image: infoStation.image,
+        rootLocation: infoStation.rootLocation,
         // 'updateLocationStatus': func.changeBoleanToTinyInt(infoStation.updateLocationStatus),
         // 'installedAt': infoStation.installedAt,
-        'verifiedAt': infoStation.verifiedAt,
-        'verificationOrganization': infoStation.verificationOrganization,
+        verifiedAt: infoStation.verifiedAt,
+        verificationOrganization: infoStation.verificationOrganization,
         // 'emittedFrequency': infoStation.emittedFrequency,
         // 'ftpFolder': infoStation.ftpFolder,
         // 'ftpFilename': infoStation.ftpFilename,
-        'alertThresholdStatus': func.changeBoleanToTinyInt(infoStation.alertThresholdStatus),
-        'alertStructureStatus': func.changeBoleanToTinyInt(infoStation.alertStructureStatus),
-        'alertDisconnectionStatus': func.changeBoleanToTinyInt(infoStation.alertDisconnectionStatus),
-        'activityStatus': func.changeBoleanToTinyInt(infoStation.activityStatus),
-        'publicStatus': func.changeBoleanToTinyInt(infoStation.publicStatus),
+        alertThresholdStatus: func.changeBoleanToTinyInt(
+          infoStation.alertThresholdStatus
+        ),
+        alertStructureStatus: func.changeBoleanToTinyInt(
+          infoStation.alertStructureStatus
+        ),
+        alertDisconnectionStatus: func.changeBoleanToTinyInt(
+          infoStation.alertDisconnectionStatus
+        ),
+        activityStatus: func.changeBoleanToTinyInt(infoStation.activityStatus),
+        publicStatus: func.changeBoleanToTinyInt(infoStation.publicStatus),
         // 'disconnectionTime': infoStation.disconnectionTime
       }
 
@@ -159,17 +219,27 @@ export default expressRouter => {
         usernameFtp: infoStation.usernameFtp,
         passwordFtp: infoStation.passwordFtp,
         portFtp: infoStation.portFtp,
-        ftpFilename: infoStation.ftpFilename
+        ftpFilename: infoStation.ftpFilename,
       }
-      let updateStation = await app.Station.updateStationById(stationFields, idStation)
+      let updateStation = await app.Station.updateStationById(
+        stationFields,
+        idStation
+      )
 
       await createFtpStation(idStation, stationFtp)
       if (updateStation.length > 0) {
         // console.log('======> Here')
-        let deleteData = await app.StationIndicators.deleteStationIndicator(idStation)
+        let deleteData = await app.StationIndicators.deleteStationIndicator(
+          idStation
+        )
         if (deleteData >= 0) {
-          let arrayStationIndicator = func.renderStationIndicatorData(idStation, infoStation.indicators)
-          await app.StationIndicators.createStationIndicator(arrayStationIndicator)
+          let arrayStationIndicator = func.renderStationIndicatorData(
+            idStation,
+            infoStation.indicators
+          )
+          await app.StationIndicators.createStationIndicator(
+            arrayStationIndicator
+          )
         }
       }
       res.sendStatus(200)
@@ -182,14 +252,17 @@ export default expressRouter => {
   router.post("/:managerId", async (req, res, next) => {
     try {
       const { managerId } = req.params
-      await app.Manager.checkManagerPermission(managerId, 'insert_station')
+      await app.Manager.checkManagerPermission(managerId, "insert_station")
 
       let id = newId()
       // console.log(req.body)
       let insetStation = await app.Station.createStation(id, req.body)
       // test lại
       await app.StationFtp.createStationFtp(id, req.body)
-      let arrayStationIndicator = func.renderStationIndicatorData(id, req.body.indicators)
+      let arrayStationIndicator = func.renderStationIndicatorData(
+        id,
+        req.body.indicators
+      )
       await app.StationIndicators.createStationIndicator(arrayStationIndicator)
       // if(insetStation.length){
 
@@ -206,15 +279,10 @@ export default expressRouter => {
   router.put("/image", async (req, res, next) => {
     try {
       upload(req, res, function (err) {
-
         if (err instanceof multer.MulterError) {
-          console.log('err1', err)
-          return res.status(500).json(err)
-          // A Multer error occurred when uploading.
+          return res.status(400).json(err)
         } else if (err) {
-          console.log('err2', err)
           return res.status(500).json(err)
-          // An unknown error occurred when uploading.
         }
 
         return res.status(200).send(req.file)
@@ -229,15 +297,10 @@ export default expressRouter => {
   router.put("/images", async (req, res, next) => {
     try {
       multiUpload(req, res, function (err) {
-
         if (err instanceof multer.MulterError) {
-          console.log('err1', err)
-          return res.status(500).json(err)
-          // A Multer error occurred when uploading.
+          return res.status(400).json(err)
         } else if (err) {
-          console.log('err2', err)
           return res.status(500).json(err)
-          // An unknown error occurred when uploading.
         }
 
         return res.status(200).send(req.files)
@@ -259,12 +322,14 @@ export default expressRouter => {
     try {
       const { data } = req.body
       const { managerId } = req.params
-      await app.Manager.checkManagerPermission(managerId, 'insert_station')
+      await app.Manager.checkManagerPermission(managerId, "insert_station")
       const stationId = await app.Station.createNewStation(data)
       // console.log('=====>', stationId)
       await app.ManagerStation.addNewStationManager(managerId, stationId)
 
-      const result = await app.ManagerStation.getStationManagement(managerId, { id: stationId })
+      const result = await app.ManagerStation.getStationManagement(managerId, {
+        id: stationId,
+      })
       res.send(result)
     } catch (error) {
       console.log(error)
@@ -275,7 +340,7 @@ export default expressRouter => {
   router.delete("/:managerId/:stationId", async (req, res, next) => {
     try {
       const { managerId, stationId } = req.params
-      await app.Manager.checkManagerPermission(managerId, 'delete_station')
+      await app.Manager.checkManagerPermission(managerId, "delete_station")
       await app.Station.deleteStation(stationId)
       res.sendStatus(200)
     } catch (error) {
@@ -288,16 +353,29 @@ export default expressRouter => {
     try {
       const { managerId } = req.params
       const { monitoringType, monitoringGroup, district, station } = req.query
-      if (isEmpty(monitoringType) || isEmpty(monitoringGroup) || isEmpty(district) || isEmpty(station)) {
+      if (
+        isEmpty(monitoringType) ||
+        isEmpty(monitoringGroup) ||
+        isEmpty(district) ||
+        isEmpty(station)
+      ) {
         throw {
           status: HttpStatus.BAD_REQUEST,
           id: "api.route.invalid",
-          messages: "Route not found!"
+          messages: "Route not found!",
         }
       }
-      const condition = analyzeCondition(monitoringType, monitoringGroup, district, station)
+      const condition = analyzeCondition(
+        monitoringType,
+        monitoringGroup,
+        district,
+        station
+      )
       // console.log(condition)
-      const result = await app.ManagerStation.getStationManagement(managerId, condition)
+      const result = await app.ManagerStation.getStationManagement(
+        managerId,
+        condition
+      )
       res.send(result)
     } catch (error) {
       console.log(error)
@@ -312,21 +390,22 @@ export default expressRouter => {
         throw {
           status: HttpStatus.BAD_REQUEST,
           id: "api.route.invalid",
-          messages: "Route not found!"
+          messages: "Route not found!",
         }
       }
       const stationInfo = await app.Station.getStationById(stationId)
-      const indicators = await app.StationIndicators.getStationIndicatorsByStationId(stationId)
+      const indicators =
+        await app.StationIndicators.getStationIndicatorsByStationId(stationId)
 
       let indicatorImages = {}
       for (const indicator of indicators) {
-        indicatorImages[indicator.getDataValue('name')] = {
-          indicatorId: indicator.getDataValue('idIndicator'),
-          name: indicator.getDataValue('name'),
-          image: indicator.getDataValue('image')
+        indicatorImages[indicator.getDataValue("name")] = {
+          indicatorId: indicator.getDataValue("idIndicator"),
+          name: indicator.getDataValue("name"),
+          image: indicator.getDataValue("image"),
         }
       }
-      stationInfo.setDataValue('indicatorImages', indicatorImages)
+      stationInfo.setDataValue("indicatorImages", indicatorImages)
 
       res.send({ stationInfo, indicators })
     } catch (error) {
@@ -357,12 +436,17 @@ export default expressRouter => {
   //   }
   // })
 
-  router.put("/updateStation/:stationId/:managerId", asyncMiddleware(updateStation))
+  router.put(
+    "/updateStation/:stationId/:managerId",
+    asyncMiddleware(updateStation)
+  )
 
   router.put("/getIndicators/:stationId", async (req, res, next) => {
     try {
       const { stationId } = req.params
-      let stationIndicators = await app.StationIndicators.findIndicator(stationId)
+      let stationIndicators = await app.StationIndicators.findIndicator(
+        stationId
+      )
       stationIndicators = getStationIndicators(selectedIndicator)
       res.send(stationIndicators)
     } catch (error) {
@@ -374,7 +458,9 @@ export default expressRouter => {
   router.get("/getListStation/:managerId", async (req, res, next) => {
     try {
       const { managerId } = req.params
-      let result = await app.ManagerStation.getListStation(managerId, { monitoringType: 'QTN' })
+      let result = await app.ManagerStation.getListStation(managerId, {
+        monitoringType: "QTN",
+      })
       res.send(result)
     } catch (error) {
       console.log(error)
@@ -385,33 +471,36 @@ export default expressRouter => {
   router.post("/getInfo/:managerId", async (req, res, next) => {
     try {
       const { managerId } = req.params
-      await app.Manager.checkManagerPermission(managerId, 'edit_station_config')
+      await app.Manager.checkManagerPermission(managerId, "edit_station_config")
       const { stationId } = req.body
 
-      const result = await app.Station.getStationConfiguration({ id: stationId })
+      const result = await app.Station.getStationConfiguration({
+        id: stationId,
+      })
       res.send(result)
     } catch (error) {
       console.log(error)
       next(error)
     }
   })
-
 }
 
 const updateStation = async (req, res, next) => {
   const { managerId, stationId } = req.params
-  await app.Manager.checkManagerPermission(managerId, 'edit_station_config')
+  await app.Manager.checkManagerPermission(managerId, "edit_station_config")
 
   const { data } = req.body
   if (isEmpty(managerId) || isEmpty(stationId)) {
     throw {
       status: HttpStatus.BAD_REQUEST,
       id: "api.route.invalid",
-      messages: "Route not found!"
+      messages: "Route not found!",
     }
   }
   await app.Station.updateStation(stationId, data)
-  const result = await app.ManagerStation.getStationManagement(managerId, { id: stationId })
+  const result = await app.ManagerStation.getStationManagement(managerId, {
+    id: stationId,
+  })
   res.send(result)
 }
 
@@ -426,17 +515,17 @@ async function createFtpStation(stationId, ftpStation) {
 
 function analyzeCondition(monitoringType, monitoringGroup, district, station) {
   let condition = {}
-  if (station !== 'ALL') {
+  if (station !== "ALL") {
     condition = { id: station }
   } else {
-    if (monitoringGroup !== 'ALL') {
-      if (district === 'ALL') {
+    if (monitoringGroup !== "ALL") {
+      if (district === "ALL") {
         condition = { monitoringGroupId: monitoringGroup }
       } else {
         condition = { monitoringGroupId: monitoringGroup, districtId: district }
       }
     } else {
-      if (district === 'ALL') {
+      if (district === "ALL") {
         condition = { monitoringType: monitoringType }
       } else {
         condition = { monitoringType: monitoringType, districtId: district }

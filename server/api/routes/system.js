@@ -14,34 +14,48 @@ export default (expressRouter) => {
   expressRouter.use("/thongsohethong", router)
 
   router.get("/", async (req, res, next) => {
-    const systemFields = [
-      "smsServer",
-      "smsUsername",
-      "smsPassword",
-      "alertSmsStatus",
-      "mailServer",
-      "mailPassword",
-      "mailServername",
-      "emailAlertStatus",
-      "safetyThresholdColor",
-      "warningThresholdColor",
-      "unknownThresholdColor",
-      "brokenDeviceColor",
-      "dirReceiveFtp",
-      "dirSaveFtp",
-      "dirWrongFtp",
-    ]
+    try {
+      let accessToken = req.headers.authorization
+      if (accessToken === undefined) return res.sendStatus(400)
+      await app.Authentication.fetchUserInfoByAccessToken(accessToken)
 
-    let systemInfo = await app.System.findSystemInfo("1", systemFields)
-    systemInfo = reformatSystemInfo(systemInfo)
-    systemInfo.alertSmsStatus = systemInfo.alertSmsStatus === "0" ? false : true
-    systemInfo.emailAlertStatus =
-      systemInfo.emailAlertStatus === "0" ? false : true
+      const { managerId } = req.query
+      if (managerId === undefined) return res.sendStatus(400)
+      await app.Manager.checkManagerPermission(managerId, "view_system_config")
 
-    for (const key of systemFields)
-      systemInfo[key] = systemInfo[key] === undefined ? '' : systemInfo[key]
+      const systemFields = [
+        "smsServer",
+        "smsUsername",
+        "smsPassword",
+        "alertSmsStatus",
+        "mailServer",
+        "mailPassword",
+        "mailServername",
+        "emailAlertStatus",
+        "safetyThresholdColor",
+        "warningThresholdColor",
+        "unknownThresholdColor",
+        "brokenDeviceColor",
+        "dirReceiveFtp",
+        "dirSaveFtp",
+        "dirWrongFtp",
+      ]
 
-    res.send(systemInfo)
+      let systemInfo = await app.System.findSystemInfo("1", systemFields)
+      systemInfo = reformatSystemInfo(systemInfo)
+      systemInfo.alertSmsStatus =
+        systemInfo.alertSmsStatus === "0" ? false : true
+      systemInfo.emailAlertStatus =
+        systemInfo.emailAlertStatus === "0" ? false : true
+
+      for (const key of systemFields)
+        systemInfo[key] = systemInfo[key] === undefined ? "" : systemInfo[key]
+
+      res.send(systemInfo)
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
   })
 
   router.put("/:managerId", async (req, res, next) => {

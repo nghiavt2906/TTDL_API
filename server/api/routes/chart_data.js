@@ -231,6 +231,11 @@ export default (expressRouter) => {
     try {
       let { managerId } = req.params
       const { startTime, endTime } = req.query
+
+      let accessToken = req.headers.authorization
+      if (accessToken === undefined) return res.sendStatus(400)
+      await app.Authentication.fetchUserInfoByAccessToken(accessToken)
+
       let filter = await getFilterStation(managerId)
       let data = {}
       if (filter.station.length > 0) {

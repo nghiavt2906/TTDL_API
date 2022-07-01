@@ -50,6 +50,14 @@ export default (expressRouter) => {
 
   router.get("/", async (req, res, next) => {
     try {
+      let accessToken = req.headers.authorization
+      if (accessToken === undefined) return res.sendStatus(400)
+      await app.Authentication.fetchUserInfoByAccessToken(accessToken)
+
+      const { managerId } = req.query
+      if (managerId === undefined) return res.sendStatus(400)
+      await app.Manager.checkManagerPermission(managerId, "view_user_info")
+
       let result = await app.Manager.getManagers()
 
       result = reformatManagerInfo(result)
@@ -89,7 +97,13 @@ export default (expressRouter) => {
 
   router.get("/getSelect/:managerId", async (req, res, next) => {
     try {
+      let accessToken = req.headers.authorization
+      if (accessToken === undefined) return res.sendStatus(400)
+      await app.Authentication.fetchUserInfoByAccessToken(accessToken)
+
       const { managerId } = req.params
+      await app.Manager.checkManagerPermission(managerId, "view_user_group")
+
       const characters = await app.Character.getSelectCharacters()
       const stations = await app.ManagerStation.getListStationByManagerId(
         managerId,
@@ -205,27 +219,24 @@ export default (expressRouter) => {
     }
   )
 
-  router.get(
-    "/getInfo",
-    async (req, res, next) => {
-      try {
-        console.log(req.headers.authorization)
-        const token = req.headers.authorization
-        const manager = await app.Manager.getManagerIdByToken(token)
-        if(isEmpty(manager)) {
-          throw {
-            status: HttpStatus.BAD_REQUEST,
-            id: "api.user.access_token.invalid",
-            messages: 'Người dùng không tồn tại',
-          }
+  router.get("/getInfo", async (req, res, next) => {
+    try {
+      console.log(req.headers.authorization)
+      const token = req.headers.authorization
+      const manager = await app.Manager.getManagerIdByToken(token)
+      if (isEmpty(manager)) {
+        throw {
+          status: HttpStatus.BAD_REQUEST,
+          id: "api.user.access_token.invalid",
+          messages: "Người dùng không tồn tại",
         }
-        const managerId = manager[0].managerId
-        const managerInfo = await app.Manager.getManagerInfo(managerId)
-        res.send(managerInfo)
-      } catch (error) {
-        console.log(error)
-        next(error)
       }
+      const managerId = manager[0].managerId
+      const managerInfo = await app.Manager.getManagerInfo(managerId)
+      res.send(managerInfo)
+    } catch (error) {
+      console.log(error)
+      next(error)
     }
-  )
+  })
 }
