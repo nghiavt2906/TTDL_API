@@ -19,8 +19,11 @@ export default (expressRouter) => {
       await app.Authentication.fetchUserInfoByAccessToken(accessToken)
 
       const { monitoringType, managerId } = req.query
-      if (managerId === undefined) return res.sendStatus(400)
-      await app.Manager.checkManagerPermission(managerId, "view_system_config")
+      // if (managerId === undefined) return res.sendStatus(400)
+      // await app.Manager.checkManagerPermission(
+      //   managerId,
+      //   "view_monitoring_group"
+      // )
 
       let data = {}
       let monitoringTypeData = await app.MonitoringType.getMonitoringType()
