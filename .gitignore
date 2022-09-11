@@ -3,3 +3,4 @@ streams/*
 xlsx/*.xlsx
 build
 server/logs/*.log
+public

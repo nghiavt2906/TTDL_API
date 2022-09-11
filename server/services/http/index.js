@@ -1,10 +1,12 @@
 import http from 'http'
+import https from 'https'
 import express from "express"
 import path from 'path'
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import morgan from "morgan"
 import cors from "cors"
+import fs from 'fs'
 
 // load config
 import config from "configs"
@@ -16,6 +18,7 @@ import timeout from 'connect-timeout'
 class HTTPService {
   constructor() {
     this.httpServer = null
+	this.httpsServer = null
   }
 
   initialize() {
@@ -52,6 +55,7 @@ class HTTPService {
       }
       next()
     })
+
     this.httpServer = http.createServer(app)
     this.httpServer.listen(config.server.port, err => {
       if (err) {
@@ -59,6 +63,20 @@ class HTTPService {
         return
       }
       Logger.info(`Server is running at port ${config.server.port}`)
+    })
+	
+	const httpsOptions = {
+		cert: fs.readFileSync(path.join(__dirname, 'ssl', 'certificate.crt')),
+		key: fs.readFileSync(path.join(__dirname, 'ssl', 'private.key'))
+	}
+	
+	this.httpsServer = https.createServer(httpsOptions, app)
+    this.httpsServer.listen(443, err => {
+      if (err) {
+        Logger.error(`Start HTTPS Sever error: ${err}`)
+        return
+      }
+      Logger.info(`Server is running at port 443`)
     })
   }
 }

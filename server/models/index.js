@@ -70,7 +70,13 @@ const sequelize = new Sequelize(
     logging: false,
     dialectOptions: {
       connectTimeout: 60000,
-      options: { requestTimeout: 2000000 },
+      options: { 
+	requestTimeout: 2000000, 
+	trustedconnection: false,
+        encrypt: false,
+        trustServerCertificate: false,
+        enableArithAbort : false,
+      },
     },
     pool: {
       max: 5,
