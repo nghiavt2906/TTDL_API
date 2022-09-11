@@ -140,7 +140,12 @@ export const reformatMonitoringData = (monitoringDataInfo, stationInfo) => {
       newMonitoringData[data.indicator] = data.value.toFixed(3)
     })
     // return {...dataInfo.dataValues, sentAt: newTime, MonitoringData : newMonitoringData}
-    return { ...dataInfo.dataValues, name: stationInfo.name, symbol: stationInfo.symbol, MonitoringData: newMonitoringData }
+    return {
+      ...dataInfo.dataValues,
+      name: stationInfo.name,
+      symbol: stationInfo.symbol,
+      MonitoringData: newMonitoringData,
+    }
   })
 
   return newData
@@ -160,15 +165,23 @@ export const convertMonitoringData = (monitoringDataInfo) => {
   return newData
 }
 
-export const convertStationMonitoringData = (stationInfo, monitoringDataInfo) => {
+export const convertStationMonitoringData = (
+  stationInfo,
+  monitoringDataInfo
+) => {
   let newData = monitoringDataInfo.map((dataInfo) => {
     let newMonitoringData = {}
     // const newTime = moment.utc(dataInfo.dataValues.sentAt).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY HH:MM:SS')
-    dataInfo.dataValues.MonitoringData.forEach(data => {
+    dataInfo.dataValues.MonitoringData.forEach((data) => {
       newMonitoringData[data.indicator] = data.value
     })
     // return {...dataInfo.dataValues, sentAt: newTime, MonitoringData : newMonitoringData}
-    return { ...dataInfo.dataValues, name: stationInfo.name, symbol: stationInfo.symbol, MonitoringData: newMonitoringData }
+    return {
+      ...dataInfo.dataValues,
+      name: stationInfo.name,
+      symbol: stationInfo.symbol,
+      MonitoringData: newMonitoringData,
+    }
   })
 
   return newData
@@ -507,108 +520,77 @@ export const getStationId = (filter) => {
 }
 
 //Lastest Data
-export const reformatLatestData = (inputArray) => {
+export const reformatLatestData = (unformatData) => {
   const MONITORING_STATUS = "01"
   const BROKEN_DEVICE_COLOR = "#9e9e9e"
   const OVERTHRESHOLD_COLOR = "red"
   const NORMAL_COLOR = "green"
   const UNKNOWN_COLOR = "blue"
   let newArray = []
+  let latestSentAt
 
-  inputArray.forEach((item) => {
-    if (item.MonitoringDataInfos.length > 0) {
-      let newData = []
-      item.MonitoringDataInfos[0].MonitoringData.forEach((data) => {
-        const index = _.findIndex(item.StationIndicators, (element) => {
-          return (
-            element.dataValues.Indicator.dataValues.symbol.toUpperCase() ===
-            data.dataValues.indicator
-          )
-        })
-
-        if (index > -1) {
-          const isOverThreshold =
-            data.dataValues.value >
-              item.StationIndicators[index].dataValues.upperLimit ||
-              data.dataValues.value <
-              item.StationIndicators[index].dataValues.lowerLimit
-              ? true
-              : false
-          let color = isOverThreshold ? OVERTHRESHOLD_COLOR : NORMAL_COLOR
-          const sensorStatus = data.dataValues.sensorStatus
-          color =
-            sensorStatus === MONITORING_STATUS ? color : BROKEN_DEVICE_COLOR
-          newData.push({
-            indicator:
-              item.StationIndicators[index].dataValues.Indicator.dataValues
-                .name,
-            symbol: item.StationIndicators[index].dataValues.Indicator.dataValues
-              .symbol,
-            value: data.dataValues.value,
-            upperLimit: item.StationIndicators[index].dataValues.upperLimit,
-            lowerLimit: item.StationIndicators[index].dataValues.lowerLimit,
-            unit: data.dataValues.unit || "",
-            sentAt: item.MonitoringDataInfos[0].sentAt,
-            isOverThreshold: isOverThreshold,
-            color: color,
-            sensorStatus: sensorStatus,
-          })
-        } else {
-          const sensorStatus = data.dataValues.sensorStatus
-          const color =
-            sensorStatus !== MONITORING_STATUS
-              ? BROKEN_DEVICE_COLOR
-              : UNKNOWN_COLOR
-          newData.push({
-            indicator: data.dataValues.indicator,
-            symbol: data.dataValues.indicator,
-            value: data.dataValues.value,
-            unit: data.dataValues.unit || "",
-            sentAt: item.MonitoringDataInfos[0].sentAt,
-            isOverThreshold: false,
-            color: color,
-            sensorStatus: sensorStatus,
-          })
-        }
+  unformatData.stations.forEach((item) => {
+    let newData = []
+    const stationData = unformatData.latestData.filter(
+      (record) => record.stationId === item.id
+    )
+    stationData.forEach((data) => {
+      const index = _.findIndex(item.StationIndicators, (element) => {
+        return (
+          element.dataValues.Indicator.dataValues.id ===
+          data.dataValues.id.replace(item.id, "")
+        )
       })
+
       const isOverThreshold =
-        item.StationAutoParameter.dataValues.isOverThreshold === 0
-          ? false
-          : true
-      const isDisconnect =
-        item.StationAutoParameter.dataValues.isDisconnect === 0 ? false : true
-      const isBrokenDevice =
-        item.StationAutoParameter.dataValues.isBrokenDevice === 0 ? false : true
-      newArray.push({
-        id: item.id,
-        monitoringType: item.monitoringType,
-        name: item.name,
-        address: item.address,
-        rootLocation: item.rootLocation,
-        envIndex: null,
-        latestSentAt: item.MonitoringDataInfos[0].sentAt,
-        isOverThreshold,
-        isDisconnect,
-        isBrokenDevice,
-        data: newData,
-        dataSentFrequency: item.dataSentFrequency
+        data.dataValues.value >
+          item.StationIndicators[index].dataValues.upperLimit ||
+        data.dataValues.value <
+          item.StationIndicators[index].dataValues.lowerLimit
+          ? true
+          : false
+      let color = isOverThreshold ? OVERTHRESHOLD_COLOR : NORMAL_COLOR
+      const sensorStatus = data.dataValues.sensorStatus
+      color = sensorStatus === MONITORING_STATUS ? color : BROKEN_DEVICE_COLOR
+      newData.push({
+        indicator:
+          item.StationIndicators[index].dataValues.Indicator.dataValues.name,
+        symbol:
+          item.StationIndicators[index].dataValues.Indicator.dataValues.symbol,
+        value: data.dataValues.value,
+        upperLimit: item.StationIndicators[index].dataValues.upperLimit,
+        lowerLimit: item.StationIndicators[index].dataValues.lowerLimit,
+        unit: data.dataValues.unit || "",
+        sentAt: data.dataValues.sentAt,
+        isOverThreshold: isOverThreshold,
+        color,
+        sensorStatus,
       })
-    }
-    else {
-      newArray.push({
-        id: item.id,
-        monitoringType: item.monitoringType,
-        name: item.name,
-        address: item.address,
-        rootLocation: item.rootLocation,
-        envIndex: null,
-        latestSentAt: '',
-        isOverThreshold: false,
-        isDisconnect: false,
-        isBrokenDevice: false,
-        data: [],
-      })
-    }
+
+      if (!latestSentAt || latestSentAt < data.dataValues.updatedAt)
+        latestSentAt = data.dataValues.updatedAt
+    })
+
+    const isOverThreshold =
+      item.StationAutoParameter.dataValues.isOverThreshold === 0 ? false : true
+    const isDisconnect =
+      item.StationAutoParameter.dataValues.isDisconnect === 0 ? false : true
+    const isBrokenDevice =
+      item.StationAutoParameter.dataValues.isBrokenDevice === 0 ? false : true
+    newArray.push({
+      id: item.id,
+      monitoringType: item.monitoringType,
+      name: item.name,
+      address: item.address,
+      rootLocation: item.rootLocation,
+      envIndex: null,
+      latestSentAt,
+      isOverThreshold,
+      isDisconnect,
+      isBrokenDevice,
+      data: newData,
+      dataSentFrequency: item.dataSentFrequency,
+    })
   })
   return newArray
 }

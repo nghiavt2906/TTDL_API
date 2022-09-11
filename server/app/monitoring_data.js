@@ -17,14 +17,29 @@ class MonitoringData {
     return models.MonitoringData.bulkCreate(data, { updateOnDuplicate: [""] })
   }
 
+  deleteLatestData = (ids) => {
+    return models.LatestData.destroy({ where: { id: ids } })
+  }
+
+  createLatestData = (data) => {
+    return models.LatestData.bulkCreate(data)
+  }
+
   findMonitoringData = (idData) => {
     return models.MonitoringData.findAll({
       where: {
         idData: {
-          [Op.or]: idData
-        }
+          [Op.or]: idData,
+        },
       },
-      attributes: ["id", "idData", "indicator", "value", "unit", "sensorStatus"]
+      attributes: [
+        "id",
+        "idData",
+        "indicator",
+        "value",
+        "unit",
+        "sensorStatus",
+      ],
     })
   }
 
@@ -38,22 +53,24 @@ class MonitoringData {
     //   }
     // })
     const result = await models.MonitoringData.findAll({
-      where : {unit : null},
-      attributes: ['id']
+      where: { unit: null },
+      attributes: ["id"],
     })
-    let ids = result.map(item => {
+    let ids = result.map((item) => {
       return item.id
     })
-    await models.MonitoringData.update({
-      unit : ''
-    },{
-      where : {
-        id : ids
+    await models.MonitoringData.update(
+      {
+        unit: "",
+      },
+      {
+        where: {
+          id: ids,
+        },
       }
-    })
+    )
     return ids
   }
-
 }
 
 export default MonitoringData

@@ -8,33 +8,32 @@ import { newId } from "models/utils"
 import config from "configs"
 
 class Station {
-  constructor() { }
+  constructor() {}
 
   getAllStations = async () => {
     const stations = await models.Station.findAll({
-      attributes: ['id', 'name']
+      attributes: ["id", "name"],
     })
-    return stations.map(station => ({ ...station.dataValues }))
+    return stations.map((station) => ({ ...station.dataValues }))
   }
   getAllStationsWithoutReceptionApi = async () => {
-    const res = await models.ApiKey.findAll(
-      { attributes: ['receivedStationId'], where: { isReceptionApi: true } },
-    )
+    const res = await models.ApiKey.findAll({
+      attributes: ["receivedStationId"],
+      where: { isReceptionApi: true },
+    })
 
-    const stationIds = res.map(r => r.dataValues.receivedStationId)
+    const stationIds = res.map((r) => r.dataValues.receivedStationId)
 
-    const stations = await models.Station.findAll(
-      {
-        attributes: ['id', 'name'],
-        where: {
-          id: {
-            [Op.notIn]: stationIds
-          }
-        }
-      }
-    )
+    const stations = await models.Station.findAll({
+      attributes: ["id", "name"],
+      where: {
+        id: {
+          [Op.notIn]: stationIds,
+        },
+      },
+    })
 
-    return stations.map(station => ({ ...station.dataValues }))
+    return stations.map((station) => ({ ...station.dataValues }))
   }
 
   getStationByArrayId(arrayId) {
@@ -358,7 +357,7 @@ class Station {
       ),
       activityStatus: changeBoleanToTinyInt(info.activityStatus),
       publicStatus: changeBoleanToTinyInt(info.publicStatus),
-      dataSentFrequency: parseInt(info.dataSentFrequency)
+      dataSentFrequency: parseInt(info.dataSentFrequency),
       // disconnectionTime: info.disconnectionTime
     })
   }
@@ -739,7 +738,7 @@ class Station {
         "rootLocation",
         "envIndex",
         "latestSentAt",
-        "dataSentFrequency"
+        "dataSentFrequency",
       ],
       where: {
         id: arrayStationId,
@@ -749,25 +748,25 @@ class Station {
           model: models.StationAutoParameter,
           attributes: ["isOverThreshold", "isDisconnect", "isBrokenDevice"],
         },
-        {
-          model: models.MonitoringDataInfo,
-          order: [["sentAt", "DESC"]],
-          limit: 1,
-          attributes: ["sentAt", "monitoringContent"],
-          required: true,
-          include: [
-            {
-              model: models.MonitoringData,
-              separate: true,
-              attributes: ["indicator", "value", "unit", "sensorStatus"],
-              required: true,
-            },
-          ],
-        },
+        // {
+        //   model: models.MonitoringDataInfo,
+        //   order: [["sentAt", "DESC"]],
+        //   limit: 1,
+        //   attributes: ["sentAt", "monitoringContent"],
+        //   required: true,
+        //   include: [
+        //     {
+        //       model: models.MonitoringData,
+        //       separate: true,
+        //       attributes: ["indicator", "value", "unit", "sensorStatus"],
+        //       required: true,
+        //     },
+        //   ],
+        // },
         {
           model: models.StationIndicators,
           order: [["orderIndicator", "ASC"]],
-          attributes: ["upperLimit", "lowerLimit"],
+          attributes: ["upperLimit", "lowerLimit", "idStation", "idIndicator"],
           include: [
             {
               model: models.Indicator,
@@ -778,56 +777,15 @@ class Station {
       ],
     })
 
-    for (const station of results) {
-      let monitoringContent = station.MonitoringDataInfos[0].dataValues.monitoringContent
-      for (const stationIndicator of station.StationIndicators) {
-        const indicatorSymbol = stationIndicator.dataValues.Indicator.dataValues.symbol
+    arrayStationId = arrayStationId.filter((item) => item !== "ALL")
+    const latestData = await models.LatestData.findAll({
+      separate: true,
+      where: {
+        stationId: arrayStationId,
+      },
+    })
 
-        if (!monitoringContent.includes(indicatorSymbol)) {
-          const indicatorInDb = await models.MonitoringData.findOne({
-            separate: true,
-            order: [["createdAt", "DESC"]],
-            attributes: ["indicator", "value", "unit", "sensorStatus", "idData"],
-            required: true,
-            where: {
-              indicatorId: stationIndicator.dataValues.Indicator.dataValues.id,
-              stationId: station.id
-            }
-          })
-
-          if (indicatorInDb === undefined || indicatorInDb === null)
-            continue
-
-          const result = await models.MonitoringDataInfo.findAll({
-            separate: true,
-            limit: 1,
-            attributes: ["sentAt", "monitoringContent"],
-            required: true,
-            where: {
-              id: indicatorInDb.dataValues.idData
-            },
-            include: [
-              {
-                model: models.MonitoringData,
-                separate: true,
-                attributes: ["indicator", "value", "unit", "sensorStatus"],
-                required: true,
-              },
-            ]
-          })
-
-          if (result.length === 0)
-            continue
-          const extraMonitoringData = result[0].dataValues.MonitoringData
-          station.MonitoringDataInfos[0].MonitoringData = station.MonitoringDataInfos[0].MonitoringData.concat(extraMonitoringData)
-
-          monitoringContent = monitoringContent + result[0].dataValues.monitoringContent
-          station.MonitoringDataInfos[0].dataValues.monitoringContent = monitoringContent
-        }
-      }
-    }
-
-    return results
+    return { stations: results, latestData }
   }
 
   getLatestApprovedData = (arrayStationId) => {
@@ -1344,14 +1302,18 @@ class Station {
         await this.validateStationData(info, true)
         const indicatorNames = Object.keys(info.indicatorImages)
         const stationIndicatorData = info.indicators.map((item, index) => {
-          const indicatorName = indicatorNames.find(name => info.indicatorImages[name].indicatorId == item.indicatorId)
+          const indicatorName = indicatorNames.find(
+            (name) => info.indicatorImages[name].indicatorId == item.indicatorId
+          )
           const indicatorImage = info.indicatorImages[indicatorName].image
           return {
             id: newId(),
             idIndicator: item.indicatorId,
             status: item.status,
             image:
-              indicatorImage === "" || indicatorImage === null || indicatorImage === undefined
+              indicatorImage === "" ||
+              indicatorImage === null ||
+              indicatorImage === undefined
                 ? `default-sensor.jpg`
                 : indicatorImage,
             upperLimit: item.upperLimit,
@@ -1389,7 +1351,7 @@ class Station {
             alertStructureStatus: info.alertStructureStatus,
             alertDisconnectionStatus: info.alertDisconnectionStatus,
           },
-          dataSentFrequency: info.dataSentFrequency
+          dataSentFrequency: info.dataSentFrequency,
         }
         const newStation = await models.Station.create(data, {
           include: [models.StationIndicators, models.StationAutoParameter],
@@ -1427,7 +1389,9 @@ class Station {
       await this.validateStationData(data, false)
       const indicatorNames = Object.keys(data.indicatorImages)
       const stationIndicatorData = data.indicators.map((item, index) => {
-        const indicatorName = indicatorNames.find(name => data.indicatorImages[name].indicatorId == item.indicatorId)
+        const indicatorName = indicatorNames.find(
+          (name) => data.indicatorImages[name].indicatorId == item.indicatorId
+        )
         const indicatorImage = data.indicatorImages[indicatorName].image
         return {
           id: newId(),
@@ -1435,7 +1399,9 @@ class Station {
           idIndicator: item.indicatorId,
           status: item.status,
           image:
-            indicatorImage === "" || indicatorImage === null || indicatorImage === undefined
+            indicatorImage === "" ||
+            indicatorImage === null ||
+            indicatorImage === undefined
               ? `default-sensor.jpg`
               : indicatorImage,
           upperLimit: item.upperLimit,
@@ -1458,9 +1424,13 @@ class Station {
         syncDataBotnmtStatus: data.syncDataBotnmtStatus,
         activityStatus: data.activityStatus,
         publicStatus: data.publicStatus,
-        dataSentFrequency: data.dataSentFrequency
+        dataSentFrequency: data.dataSentFrequency,
       }
-      if (data.image === "" || data.image === null || data.image === undefined) {
+      if (
+        data.image === "" ||
+        data.image === null ||
+        data.image === undefined
+      ) {
         stationInfo.image = `default.jpg`
       } else {
         stationInfo.image = data.image
@@ -1468,32 +1438,32 @@ class Station {
 
       const stationAutoParams = !data.isManualStation
         ? {
-          alertDisconnectionStatus: data.alertDisconnectionStatus,
-          alertStructureStatus: data.alertStructureStatus,
-          alertThresholdStatus: data.alertThresholdStatus,
-        }
+            alertDisconnectionStatus: data.alertDisconnectionStatus,
+            alertStructureStatus: data.alertStructureStatus,
+            alertThresholdStatus: data.alertThresholdStatus,
+          }
         : {
-          alertDisconnectionStatus: 0,
-          alertStructureStatus: 0,
-          alertThresholdStatus: 0,
-        }
+            alertDisconnectionStatus: 0,
+            alertStructureStatus: 0,
+            alertThresholdStatus: 0,
+          }
       const stationFtp = data.isManualStation
         ? {
-          host: null,
-          username: null,
-          password: null,
-          port: null,
-          ftpFilename: null,
-          // hostFtpSample : null,
-          // usernameFtpSample: null,
-          // passwordFtpSample: null,
-          // portFtpSample: null,
-          hostFtpBotnmt: data.StationFtp.hostFtpBotnmt,
-          usernameFtpBotnmt: data.StationFtp.usernameFtpBotnmt,
-          passwordFtpBotnmt: data.StationFtp.passwordFtpBotnmt,
-          portFtpBotnmt: data.StationFtp.portFtpBotnmt,
-          ftpFilenameBotnmt: data.StationFtp.ftpFilenameBotnmt,
-        }
+            host: null,
+            username: null,
+            password: null,
+            port: null,
+            ftpFilename: null,
+            // hostFtpSample : null,
+            // usernameFtpSample: null,
+            // passwordFtpSample: null,
+            // portFtpSample: null,
+            hostFtpBotnmt: data.StationFtp.hostFtpBotnmt,
+            usernameFtpBotnmt: data.StationFtp.usernameFtpBotnmt,
+            passwordFtpBotnmt: data.StationFtp.passwordFtpBotnmt,
+            portFtpBotnmt: data.StationFtp.portFtpBotnmt,
+            ftpFilenameBotnmt: data.StationFtp.ftpFilenameBotnmt,
+          }
         : data.StationFtp
       await models.Station.update(stationInfo, { where: { id: stationId } })
       await models.StationAutoParameter.update(stationAutoParams, {
