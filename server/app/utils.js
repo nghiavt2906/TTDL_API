@@ -527,9 +527,9 @@ export const reformatLatestData = (unformatData) => {
   const NORMAL_COLOR = "green"
   const UNKNOWN_COLOR = "blue"
   let newArray = []
-  let latestSentAt
 
   unformatData.stations.forEach((item) => {
+    let latestSentAt
     let newData = []
     const stationData = unformatData.latestData.filter(
       (record) => record.stationId === item.id
